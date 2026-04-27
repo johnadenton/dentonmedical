@@ -1,0 +1,2780 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="theme-color" content="#2D5016">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="DentonMedical">
+<link rel="manifest" href="manifest.json">
+<title>Denton Medical</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;600&family=Source+Sans+3:wght@300;400;500;600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --green-dark: #0a3a5c;
+  --green-mid: #1565a8;
+  --green-bright: #2585d8;
+  --green-light: #5fb3eb;
+  --green-pale: #c8e3f5;
+  --green-mist: #ebf4fb;
+  --gold: #1565a8;
+  --gold-light: #5fb3eb;
+  --gold-pale: #ebf4fb;
+  --earth: #6b4226;
+  --cream: #faf8f2;
+  --white: #ffffff;
+  --text-dark: #1a1a14;
+  --text-mid: #3d3d2e;
+  --text-muted: #7a7a60;
+  --border: #d8e8c8;
+  --red: #c0392b;
+  --red-light: #fdecea;
+  --shadow-sm: 0 1px 4px rgba(45,80,22,0.1);
+  --shadow-md: 0 4px 16px rgba(45,80,22,0.15);
+  --shadow-lg: 0 8px 32px rgba(45,80,22,0.2);
+  --radius: 14px;
+  --radius-sm: 8px;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+
+body {
+  font-family: 'Source Sans 3', sans-serif;
+  background: var(--cream);
+  color: var(--text-dark);
+  min-height: 100vh;
+  max-width: 480px;
+  margin: 0 auto;
+  position: relative;
+  overflow-x: hidden;
+}
+
+/* ── TYPOGRAPHY ── */
+.font-display { font-family: 'Playfair Display', serif; }
+
+/* ── TOP BAR ── */
+#topbar {
+  background: var(--green-mid);
+  padding: 16px 20px 12px;
+  position: sticky;
+  top: 0;
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  box-shadow: var(--shadow-md);
+}
+.topbar-title {
+  font-family: 'Playfair Display', serif;
+  font-size: 18px;
+  color: var(--white);
+  letter-spacing: 0.3px;
+}
+.topbar-sub { font-size: 11px; color: var(--green-pale); opacity: 0.85; margin-top: 1px; }
+.topbar-sync {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.3);
+  border-radius: 20px;
+  padding: 5px 12px;
+  color: white;
+  font-size: 12px;
+  font-family: 'Source Sans 3', sans-serif;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  gap: 5px;
+}
+.topbar-sync:active { opacity: 0.7; }
+.sync-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--gold-light); }
+.sync-dot.synced { background: #6ddd5a; }
+
+/* ── BOTTOM NAV ── */
+#bottomnav {
+  position: fixed;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100%;
+  max-width: 480px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  display: flex;
+  z-index: 100;
+  box-shadow: 0 -4px 20px rgba(0,0,0,0.08);
+}
+.nav-item {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 10px 0 14px;
+  cursor: pointer;
+  position: relative;
+  gap: 3px;
+}
+.nav-item svg { transition: transform 0.15s; }
+.nav-item:active svg { transform: scale(0.88); }
+.nav-icon { font-size: 22px; line-height: 1; }
+.nav-label { font-size: 10px; color: var(--text-muted); letter-spacing: 0.3px; }
+.nav-item.active .nav-label { color: var(--green-mid); font-weight: 600; }
+.nav-item.active .nav-icon-wrap svg path,
+.nav-item.active .nav-icon-wrap svg rect,
+.nav-item.active .nav-icon-wrap svg circle,
+.nav-item.active .nav-icon-wrap svg polyline,
+.nav-item.active .nav-icon-wrap svg line,
+.nav-item.active .nav-icon-wrap svg polygon { stroke: var(--green-mid); }
+.nav-bar {
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 0;
+  height: 2px;
+  background: var(--green-bright);
+  border-radius: 0 0 3px 3px;
+  transition: width 0.2s;
+}
+.nav-item.active .nav-bar { width: 32px; }
+
+/* ── MAIN CONTENT ── */
+#main { padding: 16px 16px 90px; }
+
+/* ── SCREENS ── */
+.screen { display: none; animation: fadeIn 0.18s ease; }
+.screen.active { display: block; }
+@keyframes fadeIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: translateY(0); } }
+
+/* ── SECTION HEADER ── */
+.section-header {
+  font-family: 'Playfair Display', serif;
+  font-size: 22px;
+  color: var(--green-dark);
+  margin-bottom: 4px;
+}
+.section-sub { font-size: 13px; color: var(--text-muted); margin-bottom: 16px; }
+
+/* ── CARDS ── */
+.card {
+  background: var(--white);
+  border-radius: var(--radius);
+  border: 1px solid var(--border);
+  padding: 16px;
+  margin-bottom: 12px;
+  box-shadow: var(--shadow-sm);
+}
+.card-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--text-muted);
+  text-transform: uppercase;
+  letter-spacing: 0.8px;
+  margin-bottom: 10px;
+}
+
+/* ── DASHBOARD ── */
+.month-banner {
+  background: linear-gradient(135deg, var(--green-mid) 0%, var(--green-bright) 100%);
+  border-radius: var(--radius);
+  padding: 20px;
+  margin-bottom: 14px;
+  position: relative;
+  overflow: hidden;
+}
+.month-banner::before {
+  content: '';
+  position: absolute;
+  right: -20px;
+  top: -20px;
+  width: 120px;
+  height: 120px;
+  border-radius: 50%;
+  background: rgba(255,255,255,0.07);
+}
+.month-label { font-size: 12px; color: var(--green-pale); letter-spacing: 1px; text-transform: uppercase; }
+.month-name { font-family: 'Playfair Display', serif; font-size: 26px; color: white; margin: 4px 0 14px; }
+.profit-row { display: flex; gap: 10px; }
+.profit-box {
+  flex: 1;
+  background: rgba(255,255,255,0.12);
+  border-radius: 10px;
+  padding: 10px 12px;
+}
+.profit-box-label { font-size: 11px; color: rgba(255,255,255,0.7); margin-bottom: 3px; }
+.profit-box-value { font-size: 20px; font-weight: 600; color: white; }
+.profit-box-value.income { color: #a8f090; }
+.profit-box-value.expense { color: #ffb3a3; }
+.profit-box-value.net { color: white; }
+.net-indicator { display: inline-block; width: 8px; height: 8px; border-radius: 50%; margin-right: 4px; }
+.net-indicator.pos { background: #6ddd5a; }
+.net-indicator.neg { background: #ff6b6b; }
+
+.quick-actions { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 14px; }
+.quick-btn {
+  background: var(--white);
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius);
+  padding: 14px 12px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 7px;
+  cursor: pointer;
+  box-shadow: var(--shadow-sm);
+  transition: all 0.15s;
+}
+.quick-btn:active { transform: scale(0.96); background: var(--green-mist); border-color: var(--green-light); }
+.quick-btn-icon { font-size: 26px; }
+.quick-btn-label { font-size: 13px; font-weight: 600; color: var(--green-dark); }
+.quick-btn-sub { font-size: 11px; color: var(--text-muted); text-align: center; }
+
+.recent-list { }
+.recent-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 11px 0;
+  border-bottom: 1px solid var(--border);
+}
+.recent-item:last-child { border-bottom: none; }
+.recent-icon {
+  width: 38px;
+  height: 38px;
+  border-radius: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 18px;
+  flex-shrink: 0;
+}
+.recent-icon.expense { background: #fef0eb; }
+.recent-icon.income { background: var(--green-mist); }
+.recent-info { flex: 1; min-width: 0; }
+.recent-name { font-size: 14px; font-weight: 500; color: var(--text-dark); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.recent-meta { font-size: 11px; color: var(--text-muted); margin-top: 1px; }
+.recent-amount { font-size: 15px; font-weight: 600; }
+.recent-amount.expense { color: var(--red); }
+.recent-amount.income { color: var(--green-bright); }
+
+/* ── FORMS ── */
+.form-group { margin-bottom: 14px; }
+.form-label { font-size: 12px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; margin-bottom: 6px; display: block; }
+.form-input, .form-select, .form-textarea {
+  width: 100%;
+  padding: 12px 14px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  color: var(--text-dark);
+  background: var(--white);
+  appearance: none;
+  -webkit-appearance: none;
+  transition: border-color 0.15s;
+}
+.form-input:focus, .form-select:focus, .form-textarea:focus {
+  outline: none;
+  border-color: var(--green-bright);
+  box-shadow: 0 0 0 3px rgba(74,124,32,0.1);
+}
+.form-textarea { resize: vertical; min-height: 80px; }
+.form-select-wrap { position: relative; }
+.form-select-wrap::after {
+  content: '▾';
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  color: var(--text-muted);
+  pointer-events: none;
+}
+.form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.form-hint { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
+
+/* ── BUTTONS ── */
+.btn {
+  display: block;
+  width: 100%;
+  padding: 15px;
+  border-radius: var(--radius-sm);
+  border: none;
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer;
+  text-align: center;
+  transition: all 0.15s;
+}
+.btn:active { transform: scale(0.97); }
+.btn-primary { background: var(--green-mid); color: white; }
+.btn-primary:active { background: var(--green-dark); }
+.btn-secondary { background: var(--green-mist); color: var(--green-dark); border: 1.5px solid var(--green-pale); }
+.btn-gold { background: var(--gold); color: white; }
+.btn-danger { background: var(--red); color: white; }
+.btn-sm { padding: 9px 16px; font-size: 13px; width: auto; display: inline-block; border-radius: 8px; }
+
+/* ── CATEGORY PILLS ── */
+.category-grid { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 6px; }
+.category-pill {
+  padding: 7px 14px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--text-mid);
+  cursor: pointer;
+  background: var(--white);
+  transition: all 0.12s;
+  white-space: nowrap;
+}
+.category-pill.selected {
+  background: var(--green-mid);
+  border-color: var(--green-mid);
+  color: white;
+}
+.category-pill:active { transform: scale(0.94); }
+
+/* ── RECEIPT SCANNER ── */
+.scan-area {
+  background: var(--text-dark);
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+  min-height: 260px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 14px;
+}
+#cameraPreview { width: 100%; max-height: 280px; object-fit: cover; display: none; }
+.scan-placeholder { text-align: center; padding: 30px; }
+.scan-placeholder-icon { font-size: 48px; margin-bottom: 12px; opacity: 0.6; }
+.scan-placeholder-text { color: rgba(255,255,255,0.6); font-size: 14px; }
+.scan-btn-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.scan-corner {
+  position: absolute;
+  width: 24px; height: 24px;
+  border-color: var(--green-light);
+  border-style: solid;
+  border-width: 0;
+}
+.scan-corner.tl { top: 16px; left: 16px; border-top-width: 3px; border-left-width: 3px; border-radius: 3px 0 0 0; }
+.scan-corner.tr { top: 16px; right: 16px; border-top-width: 3px; border-right-width: 3px; border-radius: 0 3px 0 0; }
+.scan-corner.bl { bottom: 16px; left: 16px; border-bottom-width: 3px; border-left-width: 3px; border-radius: 0 0 0 3px; }
+.scan-corner.br { bottom: 16px; right: 16px; border-bottom-width: 3px; border-right-width: 3px; border-radius: 0 0 3px 0; }
+
+#fileInput { display: none; }
+#cameraInput { display: none; }
+
+/* ── RECEIPT LINE ITEMS ── */
+.line-item {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  gap: 8px;
+  align-items: center;
+  padding: 9px 0;
+  border-bottom: 1px solid var(--border);
+}
+.line-item:last-child { border-bottom: none; }
+.line-item-name { font-size: 14px; }
+.line-item-cat {
+  font-size: 11px;
+  color: var(--text-muted);
+  background: var(--green-mist);
+  padding: 2px 8px;
+  border-radius: 10px;
+}
+.line-item-amount { font-size: 14px; font-weight: 600; color: var(--text-dark); }
+.remove-btn { width: 22px; height: 22px; border-radius: 50%; background: var(--red-light); border: none; color: var(--red); font-size: 14px; cursor: pointer; display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
+
+/* ── ITEMS LIST (SALES) ── */
+.sale-item-row {
+  display: grid;
+  grid-template-columns: 1fr 80px 80px 30px;
+  gap: 8px;
+  align-items: center;
+  margin-bottom: 8px;
+}
+.sale-item-row input { padding: 9px 10px; font-size: 14px; }
+
+/* ── REPORTS ── */
+.report-period { display: flex; gap: 8px; margin-bottom: 14px; overflow-x: auto; padding-bottom: 4px; }
+.period-btn {
+  padding: 7px 16px;
+  border-radius: 20px;
+  border: 1.5px solid var(--border);
+  font-size: 13px;
+  font-weight: 500;
+  background: var(--white);
+  color: var(--text-mid);
+  cursor: pointer;
+  white-space: nowrap;
+  flex-shrink: 0;
+}
+.period-btn.active { background: var(--green-dark); border-color: var(--green-dark); color: white; }
+.report-chart { height: 160px; position: relative; margin: 8px 0 16px; }
+.bar-chart { display: flex; align-items: flex-end; gap: 6px; height: 100%; }
+.bar-group { display: flex; gap: 3px; align-items: flex-end; flex: 1; flex-direction: column; }
+.bar-month-label { font-size: 9px; color: var(--text-muted); text-align: center; margin-top: 4px; }
+.bar { border-radius: 4px 4px 0 0; min-height: 4px; transition: height 0.3s ease; }
+.bar.income-bar { background: var(--green-light); width: 12px; }
+.bar.expense-bar { background: #e8a87c; width: 12px; }
+.bar-pair { display: flex; gap: 2px; align-items: flex-end; }
+
+.cat-breakdown { }
+.cat-row {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 8px 0;
+  border-bottom: 1px solid var(--border);
+}
+.cat-row:last-child { border-bottom: none; }
+.cat-color { width: 10px; height: 10px; border-radius: 3px; flex-shrink: 0; }
+.cat-name { flex: 1; font-size: 14px; }
+.cat-pct { font-size: 12px; color: var(--text-muted); margin-right: 8px; }
+.cat-amt { font-size: 14px; font-weight: 600; }
+.cat-bar-wrap { height: 3px; background: var(--border); border-radius: 2px; flex: 1; margin: 0 6px; }
+.cat-bar-fill { height: 100%; border-radius: 2px; }
+
+/* ── SETTINGS ── */
+.settings-section { margin-bottom: 20px; }
+.settings-title { font-size: 13px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.8px; margin-bottom: 10px; }
+.settings-row {
+  background: var(--white);
+  border: 1px solid var(--border);
+  padding: 14px 16px;
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  cursor: pointer;
+}
+.settings-row:first-of-type { border-radius: var(--radius) var(--radius) 0 0; }
+.settings-row:last-of-type { border-radius: 0 0 var(--radius) var(--radius); border-top: none; }
+.settings-row:only-child { border-radius: var(--radius); }
+.settings-row:not(:first-of-type):not(:only-child) { border-top: none; }
+.settings-icon { font-size: 20px; width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; background: var(--green-mist); flex-shrink: 0; }
+.settings-info { flex: 1; }
+.settings-name { font-size: 15px; font-weight: 500; }
+.settings-desc { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
+.settings-arrow { color: var(--text-muted); font-size: 18px; }
+.toggle-switch { position: relative; width: 44px; height: 24px; flex-shrink: 0; }
+.toggle-switch input { opacity: 0; width: 0; height: 0; }
+.toggle-slider {
+  position: absolute; inset: 0;
+  background: var(--border);
+  border-radius: 12px;
+  transition: 0.2s;
+  cursor: pointer;
+}
+.toggle-slider::before {
+  content: '';
+  position: absolute;
+  width: 18px; height: 18px;
+  border-radius: 50%;
+  background: white;
+  top: 3px; left: 3px;
+  transition: 0.2s;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+}
+input:checked + .toggle-slider { background: var(--green-bright); }
+input:checked + .toggle-slider::before { transform: translateX(20px); }
+
+/* ── MODAL ── */
+.modal-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0,0,0,0.5);
+  z-index: 200;
+  display: none;
+  align-items: flex-end;
+  justify-content: center;
+}
+.modal-overlay.open { display: flex; }
+.modal-sheet {
+  background: var(--cream);
+  border-radius: 20px 20px 0 0;
+  padding: 20px 20px 40px;
+  width: 100%;
+  max-width: 480px;
+  max-height: 85vh;
+  overflow-y: auto;
+  animation: slideUp 0.25s ease;
+}
+@keyframes slideUp { from { transform: translateY(100%); } to { transform: translateY(0); } }
+.modal-handle { width: 36px; height: 4px; background: var(--border); border-radius: 2px; margin: 0 auto 16px; }
+.modal-title { font-family: 'Playfair Display', serif; font-size: 20px; color: var(--green-dark); margin-bottom: 16px; }
+
+/* ── TOAST ── */
+#toast {
+  position: fixed;
+  bottom: 90px;
+  left: 50%;
+  transform: translateX(-50%) translateY(20px);
+  background: var(--green-dark);
+  color: white;
+  padding: 10px 20px;
+  border-radius: 20px;
+  font-size: 14px;
+  opacity: 0;
+  transition: all 0.3s;
+  z-index: 300;
+  white-space: nowrap;
+  pointer-events: none;
+  box-shadow: var(--shadow-lg);
+}
+#toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
+/* ── LOADING ── */
+.loading-spinner {
+  display: inline-block;
+  width: 18px; height: 18px;
+  border: 2px solid rgba(255,255,255,0.3);
+  border-top-color: white;
+  border-radius: 50%;
+  animation: spin 0.7s linear infinite;
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+
+.processing-overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0,0,0,0.6);
+  display: none;
+  align-items: center;
+  justify-content: center;
+  flex-direction: column;
+  gap: 10px;
+  color: white;
+  font-size: 14px;
+  border-radius: var(--radius);
+}
+.processing-overlay.show { display: flex; }
+
+/* ── EMPTY STATE ── */
+.empty-state {
+  text-align: center;
+  padding: 30px 20px;
+  color: var(--text-muted);
+}
+.empty-icon { font-size: 40px; margin-bottom: 10px; opacity: 0.5; }
+.empty-text { font-size: 14px; }
+
+/* ── BADGES ── */
+.badge {
+  display: inline-block;
+  padding: 2px 8px;
+  border-radius: 10px;
+  font-size: 11px;
+  font-weight: 600;
+}
+.badge-green { background: var(--green-mist); color: var(--green-dark); }
+.badge-gold { background: var(--gold-pale); color: var(--gold); }
+.badge-red { background: var(--red-light); color: var(--red); }
+
+/* ── GOOGLE SIGNIN ── */
+.google-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  width: 100%;
+  padding: 13px;
+  border: 1.5px solid var(--border);
+  border-radius: var(--radius-sm);
+  background: var(--white);
+  font-family: 'Source Sans 3', sans-serif;
+  font-size: 15px;
+  font-weight: 500;
+  color: var(--text-dark);
+  cursor: pointer;
+  margin-bottom: 10px;
+}
+.google-btn:active { background: #f5f5f5; }
+
+.status-bar {
+  background: var(--green-mist);
+  border: 1px solid var(--green-pale);
+  border-radius: var(--radius-sm);
+  padding: 10px 14px;
+  font-size: 13px;
+  color: var(--green-dark);
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 14px;
+}
+.status-bar.error { background: var(--red-light); border-color: #f5c6c6; color: var(--red); }
+
+/* ── VENDORS ── */
+.vendor-tabs { display: flex; gap: 0; margin-bottom: 16px; border: 1.5px solid var(--border); border-radius: var(--radius-sm); overflow: hidden; }
+.vendor-tab {
+  flex: 1; padding: 10px 8px; font-size: 13px; font-weight: 600;
+  background: var(--white); border: none; cursor: pointer; color: var(--text-muted);
+  font-family: 'Source Sans 3', sans-serif;
+}
+.vendor-tab.active { background: var(--green-mid); color: white; }
+.vendor-card {
+  background: var(--white); border: 1px solid var(--border); border-radius: var(--radius);
+  padding: 14px 16px; margin-bottom: 10px; display: flex; align-items: center; gap: 12px;
+  cursor: pointer; box-shadow: var(--shadow-sm);
+}
+.vendor-card:active { background: var(--green-mist); }
+.vendor-avatar {
+  width: 44px; height: 44px; border-radius: 50%; display: flex; align-items: center;
+  justify-content: center; font-size: 17px; font-weight: 600; flex-shrink: 0;
+}
+.vendor-avatar.seller { background: #fef0eb; color: #d0643c; }
+.vendor-avatar.buyer { background: var(--green-mist); color: var(--green-dark); }
+.vendor-info { flex: 1; min-width: 0; }
+.vendor-name { font-size: 15px; font-weight: 600; color: var(--text-dark); }
+.vendor-detail { font-size: 12px; color: var(--text-muted); margin-top: 2px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.vendor-stats { text-align: right; flex-shrink: 0; }
+.vendor-stat-amt { font-size: 14px; font-weight: 600; }
+.vendor-stat-amt.seller { color: var(--red); }
+.vendor-stat-amt.buyer { color: var(--green-bright); }
+.vendor-stat-count { font-size: 11px; color: var(--text-muted); }
+
+/* autocomplete */
+.autocomplete-wrap { position: relative; }
+.autocomplete-list {
+  position: absolute; top: 100%; left: 0; right: 0; z-index: 50;
+  background: var(--white); border: 1.5px solid var(--green-bright); border-top: none;
+  border-radius: 0 0 var(--radius-sm) var(--radius-sm); max-height: 180px; overflow-y: auto;
+  box-shadow: var(--shadow-md);
+}
+.autocomplete-item {
+  padding: 10px 14px; font-size: 14px; cursor: pointer; border-bottom: 1px solid var(--border);
+  display: flex; align-items: center; gap: 8px;
+}
+.autocomplete-item:last-child { border-bottom: none; }
+.autocomplete-item:active { background: var(--green-mist); }
+.autocomplete-badge { font-size: 11px; padding: 2px 7px; border-radius: 10px; flex-shrink: 0; }
+
+/* Data table */
+.data-table { width: 100%; border-collapse: collapse; font-size: 13px; }
+.data-table th { text-align: left; padding: 8px 10px; font-size: 11px; font-weight: 600; color: var(--text-muted); text-transform: uppercase; letter-spacing: 0.6px; border-bottom: 1.5px solid var(--border); }
+.data-table td { padding: 10px; border-bottom: 1px solid var(--border); vertical-align: top; }
+.data-table tr:last-child td { border-bottom: none; }
+.data-table tr:active td { background: var(--green-mist); }
+
+</style>
+</head>
+<body>
+
+<!-- TOP BAR -->
+<div id="topbar">
+  <div>
+    <div class="topbar-title">⚕️ Denton Medical</div>
+    <div class="topbar-sub" id="topbarDate"></div>
+  </div>
+  <button class="topbar-sync" onclick="syncToGoogle()" id="syncBtn">
+    <span class="sync-dot" id="syncDot"></span>
+    <span id="syncLabel">Sync</span>
+  </button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div id="main">
+
+  <!-- ══ DASHBOARD ══ -->
+  <div id="screen-dashboard" class="screen active">
+    <div class="month-banner">
+      <div class="month-label">Summary</div>
+      <div class="month-name font-display" id="dashMonth"></div>
+      <div class="profit-row">
+        <div class="profit-box">
+          <div class="profit-box-label">Reimbursed</div>
+          <div class="profit-box-value income" id="dashReimbursed">$0.00</div>
+        </div>
+        <div class="profit-box">
+          <div class="profit-box-label">Expenses</div>
+          <div class="profit-box-value expense" id="dashExpense">$0.00</div>
+        </div>
+        <div class="profit-box">
+          <div class="profit-box-label">Net</div>
+          <div class="profit-box-value net" id="dashNet"><span class="net-indicator pos" id="netIndicator"></span>$0.00</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="quick-actions">
+      <div class="quick-btn" onclick="openScanModal()">
+        <div class="quick-btn-icon">📷</div>
+        <div class="quick-btn-label">Scan Receipt</div>
+        <div class="quick-btn-sub">Camera or photo</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('expense'); openManualExpense()">
+        <div class="quick-btn-icon">➕</div>
+        <div class="quick-btn-label">Add Expense</div>
+        <div class="quick-btn-sub">Manual entry</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('sales'); openSaleEntry()">
+        <div class="quick-btn-icon">💰</div>
+        <div class="quick-btn-label">Record Reimburse</div>
+        <div class="quick-btn-sub">Insurance payment</div>
+      </div>
+      <div class="quick-btn" onclick="showScreen('reports')">
+        <div class="quick-btn-icon">📊</div>
+        <div class="quick-btn-label">Reports</div>
+        <div class="quick-btn-sub">View P&L</div>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Recent Activity</div>
+      <div id="recentList"></div>
+    </div>
+  </div>
+
+  <!-- ══ EXPENSE SCREEN ══ -->
+  <div id="screen-expense" class="screen">
+    <div class="section-header">Expenses</div>
+    <div class="section-sub">Scan receipts or enter manually</div>
+
+    <div class="scan-btn-row">
+      <button class="btn btn-primary" onclick="openScanModal()">📷 Scan Receipt</button>
+      <button class="btn btn-secondary" onclick="openManualExpense()">✏️ Manual Entry</button>
+    </div>
+
+    <!-- Mileage quick-entry card -->
+    <div class="card" style="border-left:4px solid var(--green-bright);margin-bottom:14px">
+      <div class="card-title" style="margin-bottom:10px">🚗 Log Mileage</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:10px">
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Date</label>
+          <input type="date" class="form-input" id="quickMileDate">
+        </div>
+        <div class="form-group" style="margin-bottom:0">
+          <label class="form-label">Miles Driven</label>
+          <input type="number" class="form-input" id="quickMiles" placeholder="0.0" step="0.1" min="0" oninput="updateQuickMileCalc()">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:10px">
+        <label class="form-label">Purpose / Destination</label>
+        <input type="text" class="form-input" id="quickMileDesc" placeholder="e.g. Feed store run, Vet visit">
+      </div>
+      <div style="display:flex;align-items:center;justify-content:space-between;background:var(--green-mist);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:10px">
+        <div>
+          <div style="font-size:11px;color:var(--text-muted)">Rate: <span id="quickMileRateDisplay">$0.67</span>/mile</div>
+          <div style="font-size:18px;font-weight:600;color:var(--green-dark)" id="quickMileTotal">$0.00</div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);text-align:right">IRS Standard<br>Mileage Rate</div>
+      </div>
+      <button class="btn btn-primary" onclick="saveQuickMileage()">Save Mileage</button>
+    </div>
+
+    <div class="card">
+      <div class="card-title">All Expenses</div>
+      <div id="expenseList"></div>
+    </div>
+  </div>
+
+  <!-- ══ SALES SCREEN ══ -->
+  <div id="screen-sales" class="screen">
+    <div class="section-header">Reimbursements</div>
+    <div class="section-sub">Track insurance reimbursements & payments received</div>
+
+    <button class="btn btn-gold" style="margin-bottom:14px" onclick="openSaleEntry()">+ New Reimbursement</button>
+
+    <div class="card">
+      <div class="card-title">Reimbursement History</div>
+      <div id="salesList"></div>
+    </div>
+  </div>
+
+  <!-- ══ VENDORS SCREEN ══ -->
+  <div id="screen-vendors" class="screen">
+    <div class="section-header">Providers</div>
+    <div class="section-sub">Doctors, hospitals, pharmacies & insurance companies</div>
+
+    <div class="vendor-tabs">
+      <button class="vendor-tab active" id="vtab-sellers" onclick="switchVendorTab('sellers')">🏥 Healthcare Providers</button>
+      <button class="vendor-tab" id="vtab-buyers" onclick="switchVendorTab('buyers')">🏦 Insurance/Payers</button>
+    </div>
+
+    <button class="btn btn-primary" style="margin-bottom:14px" id="addVendorBtn" onclick="openAddVendor()">+ Add Vendor</button>
+
+    <div id="vendorList"></div>
+  </div>
+
+  <!-- ══ REPORTS SCREEN ══ -->
+  <div id="screen-reports" class="screen">
+    <div class="section-header">Reports</div>
+    <div class="section-sub">Financial overview</div>
+
+    <div class="report-period" id="reportPeriods">
+      <button class="period-btn active" onclick="setReportPeriod('month',this)">This Month</button>
+      <button class="period-btn" onclick="setReportPeriod('last30',this)">Last 30 Days</button>
+      <button class="period-btn" onclick="setReportPeriod('quarter',this)">Quarter</button>
+      <button class="period-btn" onclick="setReportPeriod('year',this)">Year</button>
+    </div>
+
+    <div class="card" id="reportSummaryCard">
+      <div class="card-title">Profit & Loss</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;margin-bottom:10px">
+        <div style="text-align:center;background:var(--green-mist);border-radius:10px;padding:10px 6px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">Reimbursed</div>
+          <div style="font-size:16px;font-weight:600;color:var(--green-bright)" id="rptReimbursed">$0</div>
+        </div>
+        <div style="text-align:center;background:#fef0eb;border-radius:10px;padding:10px 6px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">Expenses</div>
+          <div style="font-size:16px;font-weight:600;color:#d0643c" id="rptExpense">$0</div>
+        </div>
+        <div style="text-align:center;background:var(--green-mist);border-radius:10px;padding:10px 6px">
+          <div style="font-size:11px;color:var(--text-muted);margin-bottom:3px">Net</div>
+          <div style="font-size:16px;font-weight:600" id="rptNet">$0</div>
+        </div>
+      </div>
+      <div class="report-chart">
+        <canvas id="reportCanvas" width="440" height="150"></canvas>
+      </div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Expense Breakdown</div>
+      <div id="expenseCatBreakdown"></div>
+    </div>
+
+    <div class="card">
+      <div class="card-title">Reimbursement Breakdown</div>
+      <div id="salesCatBreakdown"></div>
+    </div>
+
+    <button class="btn btn-secondary" style="margin-top:6px" onclick="exportToCSV()">⬇ Export CSV</button>
+  </div>
+
+  <!-- ══ SETTINGS SCREEN ══ -->
+  <div id="screen-settings" class="screen">
+    <div class="section-header">Settings</div>
+    <div class="section-sub">Denton Medical</div>
+
+    <div class="settings-section">
+      <div class="settings-title">Google Integration</div>
+      <div id="googleStatus"></div>
+      <div class="settings-row" onclick="handleGoogleSignIn()">
+        <div class="settings-icon">📋</div>
+        <div class="settings-info">
+          <div class="settings-name">Google Sheets Sync</div>
+          <div class="settings-desc">Auto-save all data to spreadsheet</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="handleDriveSetup()">
+        <div class="settings-icon">☁️</div>
+        <div class="settings-info">
+          <div class="settings-name">Google Drive Receipts</div>
+          <div class="settings-desc">Store receipt images in Drive</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">This Device</div>
+      <div class="card" style="margin-bottom:0;border-radius:var(--radius)">
+        <div style="font-size:14px;color:var(--text-muted);margin-bottom:8px">Give this device a name so you can tell which device entered each record in the spreadsheet.</div>
+        <div style="display:flex;gap:8px;align-items:center">
+          <input type="text" class="form-input" id="deviceNameInput" placeholder="e.g. My Phone, Office Computer" style="flex:1">
+          <button class="btn btn-primary btn-sm" onclick="saveDeviceName()">Save</button>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);margin-top:8px" id="deviceNameStatus"></div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Mileage</div>
+      <div class="card" style="margin-bottom:0;border-radius:var(--radius)">
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px">
+          <div>
+            <div style="font-size:15px;font-weight:500">IRS Mileage Rate</div>
+            <div style="font-size:12px;color:var(--text-muted);margin-top:2px">Used to calculate deductible mileage cost</div>
+          </div>
+          <div style="display:flex;align-items:center;gap:4px">
+            <span style="font-size:15px;color:var(--text-muted)">$</span>
+            <input type="number" class="form-input" id="mileageRateInput" step="0.001" min="0.1" max="2"
+              style="width:72px;padding:8px 10px;font-size:15px;font-weight:600;text-align:center"
+              onchange="saveMileageRate(this.value)">
+            <span style="font-size:13px;color:var(--text-muted)">/mi</span>
+          </div>
+        </div>
+        <div style="font-size:12px;color:var(--text-muted);background:var(--green-mist);border-radius:var(--radius-sm);padding:8px 10px">
+          💡 IRS Medical rates: 2024 = $0.21/mi · 2023 = $0.22/mi · 2022 = $0.18/mi · Note: medical mileage rate differs from business rate. Update each January.
+        </div>
+        <div style="margin-top:10px;font-size:13px;color:var(--text-muted)">
+          YTD mileage: <strong id="ytdMilesSetting">0 miles</strong> = <strong id="ytdMileValueSetting">$0.00</strong>
+        </div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Categories</div>
+      <div class="settings-row" onclick="openCategoryManager()">
+        <div class="settings-icon">🏷️</div>
+        <div class="settings-info">
+          <div class="settings-name">Manage Expense Categories</div>
+          <div class="settings-desc" id="catCountDesc"></div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="openSaleItemManager()">
+        <div class="settings-icon">🥚</div>
+        <div class="settings-info">
+          <div class="settings-name">Manage Visit Types</div>
+          <div class="settings-desc" id="itemCountDesc"></div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="showScreen('vendors')">
+        <div class="settings-icon">👥</div>
+        <div class="settings-info">
+          <div class="settings-name">Manage Providers</div>
+          <div class="settings-desc" id="vendorCountDesc"></div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+    </div>
+
+    <div class="settings-section">
+      <div class="settings-title">Data</div>
+      <div class="settings-row" onclick="exportToCSV()">
+        <div class="settings-icon">📤</div>
+        <div class="settings-info">
+          <div class="settings-name">Export to CSV</div>
+          <div class="settings-desc">Download all records</div>
+        </div>
+        <div class="settings-arrow">›</div>
+      </div>
+      <div class="settings-row" onclick="clearAllData()">
+        <div class="settings-icon">🗑️</div>
+        <div class="settings-info">
+          <div class="settings-name">Clear All Data</div>
+          <div class="settings-desc">Remove all entries (cannot undo)</div>
+        </div>
+        <div class="settings-arrow" style="color:var(--red)">›</div>
+      </div>
+    </div>
+
+    <div class="card" style="margin-top:8px;text-align:center">
+      <div style="font-family:'Playfair Display',serif;font-size:16px;color:var(--green-dark);margin-bottom:4px">⚕️ Denton Medical</div>
+      <div style="font-size:12px;color:var(--text-muted)">Medical Tracker v1.0</div>
+    </div>
+  </div>
+
+</div><!-- /main -->
+
+<!-- BOTTOM NAV -->
+<div id="bottomnav">
+  <div class="nav-item active" onclick="showScreen('dashboard')" id="nav-dashboard">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z" stroke="#888780" stroke-width="2"/><polyline points="9,22 9,12 15,12 15,22" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Home</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('expense')" id="nav-expense">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><rect x="3" y="3" width="18" height="18" rx="2" stroke="#888780" stroke-width="2"/><line x1="8" y1="12" x2="16" y2="12" stroke="#888780" stroke-width="2"/><line x1="12" y1="8" x2="12" y2="16" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Expenses</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('sales')" id="nav-sales">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="9" stroke="#888780" stroke-width="2"/><path d="M12 6v6l4 2" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Reimburse</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('vendors')" id="nav-vendors">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2" stroke="#888780" stroke-width="2"/><circle cx="9" cy="7" r="4" stroke="#888780" stroke-width="2"/><path d="M23 21v-2a4 4 0 0 0-3-3.87" stroke="#888780" stroke-width="2"/><path d="M16 3.13a4 4 0 0 1 0 7.75" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Providers</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('reports')" id="nav-reports">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><line x1="18" y1="20" x2="18" y2="10" stroke="#888780" stroke-width="2"/><line x1="12" y1="20" x2="12" y2="4" stroke="#888780" stroke-width="2"/><line x1="6" y1="20" x2="6" y2="14" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Reports</span>
+  </div>
+  <div class="nav-item" onclick="showScreen('settings')" id="nav-settings">
+    <div class="nav-bar"></div>
+    <div class="nav-icon-wrap">
+      <svg width="22" height="22" viewBox="0 0 24 24" fill="none"><circle cx="12" cy="12" r="3" stroke="#888780" stroke-width="2"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83-2.83l.06-.06A1.65 1.65 0 0 0 4.68 15a1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 2.83-2.83l.06.06A1.65 1.65 0 0 0 9 4.68a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 2.83l-.06.06A1.65 1.65 0 0 0 19.4 9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z" stroke="#888780" stroke-width="2"/></svg>
+    </div>
+    <span class="nav-label">Settings</span>
+  </div>
+</div>
+
+<!-- Hidden inputs -->
+<input type="file" id="fileInput" accept="image/*" onchange="handleImageUpload(event)">
+<input type="file" id="cameraInput" accept="image/*" capture="environment" onchange="handleImageUpload(event)">
+
+<!-- TOAST -->
+<div id="toast"></div>
+
+<!-- ══════════════════════════════════════════════
+     MODALS
+══════════════════════════════════════════════ -->
+
+<!-- SCAN MODAL -->
+<div class="modal-overlay" id="scanModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">📷 Scan Receipt</div>
+
+    <div class="scan-area" id="scanArea">
+      <div class="scan-corner tl"></div>
+      <div class="scan-corner tr"></div>
+      <div class="scan-corner bl"></div>
+      <div class="scan-corner br"></div>
+      <img id="previewImg" src="" alt="" style="display:none;width:100%;max-height:280px;object-fit:contain;border-radius:10px">
+      <div class="scan-placeholder" id="scanPlaceholder">
+        <div class="scan-placeholder-icon">🧾</div>
+        <div class="scan-placeholder-text">Take a photo or choose an image of your receipt</div>
+      </div>
+      <div class="processing-overlay" id="processingOverlay">
+        <div class="loading-spinner"></div>
+        <div>Reading receipt with AI...</div>
+      </div>
+    </div>
+
+    <div class="scan-btn-row">
+      <button class="btn btn-primary" onclick="document.getElementById('cameraInput').click()">📷 Camera</button>
+      <button class="btn btn-secondary" onclick="document.getElementById('fileInput').click()">🖼 Gallery</button>
+    </div>
+
+    <div id="receiptResults" style="display:none">
+      <div class="card-title" style="margin-bottom:8px">Detected Items</div>
+      <div id="lineItemsList"></div>
+      <div class="form-group" style="margin-top:12px">
+        <label class="form-label">Date</label>
+        <input type="date" class="form-input" id="receiptDate">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Provider / Pharmacy</label>
+        <div class="autocomplete-wrap">
+          <input type="text" class="form-input" id="receiptVendor" placeholder="Provider or pharmacy name" oninput="vendorAutocomplete(this,'seller','receiptVendorList')" autocomplete="off">
+          <div class="autocomplete-list" id="receiptVendorList" style="display:none"></div>
+        </div>
+      </div>
+      <div class="form-group">
+        <label class="form-label">Notes</label>
+        <input type="text" class="form-input" id="receiptNotes" placeholder="Optional notes">
+      </div>
+      <button class="btn btn-primary" style="margin-top:8px" onclick="saveReceiptExpenses()">✓ Save All Items</button>
+    </div>
+
+    <button class="btn btn-secondary" style="margin-top:10px" onclick="closeModal('scanModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- MANUAL EXPENSE MODAL -->
+<div class="modal-overlay" id="expenseModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Add Expense</div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="expDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Category</label>
+      <div class="category-grid" id="expCategoryGrid"></div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Description</label>
+      <input type="text" class="form-input" id="expDesc" placeholder="What was purchased?">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Amount ($)</label>
+        <input type="number" class="form-input" id="expAmount" placeholder="0.00" step="0.01" min="0">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Provider / Pharmacy</label>
+        <div class="autocomplete-wrap">
+          <input type="text" class="form-input" id="expVendor" placeholder="Doctor, pharmacy, hospital" oninput="vendorAutocomplete(this,'seller','expVendorList')" autocomplete="off">
+          <div class="autocomplete-list" id="expVendorList" style="display:none"></div>
+        </div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Mileage (if applicable)</label>
+      <div style="display:flex;gap:8px;align-items:center">
+        <input type="number" class="form-input" id="expMileage" placeholder="Miles driven" step="0.1" min="0" oninput="updateExpMileCalc()" style="flex:1">
+        <div style="background:var(--green-mist);border-radius:var(--radius-sm);padding:8px 12px;white-space:nowrap;font-size:14px;font-weight:600;color:var(--green-dark);min-width:70px;text-align:center" id="expMileCalc">$0.00</div>
+      </div>
+      <div class="form-hint" id="expMileHint">Rate: $0.67/mile (IRS) — update in Settings</div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" class="form-input" id="expNotes" placeholder="Optional notes">
+    </div>
+    <button class="btn btn-primary" onclick="saveManualExpense()">Save Expense</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('expenseModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- SALE MODAL -->
+<div class="modal-overlay" id="saleModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Record Reimbursement</div>
+    <div class="form-group">
+      <label class="form-label">Date</label>
+      <input type="date" class="form-input" id="saleDate">
+    </div>
+    <div class="form-group">
+      <label class="form-label">From (Insurance / Payer)</label>
+      <div class="autocomplete-wrap">
+        <input type="text" class="form-input" id="saleBuyer" placeholder="Insurance company or payer" oninput="vendorAutocomplete(this,'buyer','saleBuyerList')" autocomplete="off">
+        <div class="autocomplete-list" id="saleBuyerList" style="display:none"></div>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Visit / Service Type</label>
+      <div id="saleItemsContainer"></div>
+      <button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="addSaleItemRow()">+ Add Item</button>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Payment Method</label>
+      <div class="form-select-wrap">
+        <select class="form-select" id="salePayment">
+          <option>Cash</option>
+          <option>Check</option>
+          <option>Venmo</option>
+          <option>Zelle</option>
+          <option>PayPal</option>
+          <option>Other</option>
+        </select>
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <input type="text" class="form-input" id="saleNotes" placeholder="Optional notes">
+    </div>
+    <div style="background:var(--green-mist);border-radius:var(--radius-sm);padding:12px;margin-bottom:14px;display:flex;justify-content:space-between;align-items:center">
+      <span style="font-size:14px;color:var(--text-mid)">Total</span>
+      <span style="font-size:20px;font-weight:600;color:var(--green-dark)" id="saleTotalDisplay">$0.00</span>
+    </div>
+    <button class="btn btn-gold" onclick="saveSale()">Save Reimbursement</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('saleModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- CATEGORY MANAGER MODAL -->
+<div class="modal-overlay" id="categoryModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Expense Categories</div>
+    <div id="categoryList" style="margin-bottom:16px"></div>
+    <div class="form-row">
+      <div class="form-group" style="margin-bottom:0">
+        <input type="text" class="form-input" id="newCatName" placeholder="Category name">
+      </div>
+      <div>
+        <input type="text" class="form-input" id="newCatEmoji" placeholder="🏷" style="width:60px;text-align:center">
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:10px" onclick="addCategory()">+ Add Category</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('categoryModal')">Done</button>
+  </div>
+</div>
+
+<!-- SALE ITEM MANAGER MODAL -->
+<div class="modal-overlay" id="saleItemModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Visit Types</div>
+    <div id="saleItemList" style="margin-bottom:16px"></div>
+    <div class="form-row">
+      <div class="form-group" style="margin-bottom:0">
+        <input type="text" class="form-input" id="newItemName" placeholder="Visit type (e.g. Office Visit)">
+      </div>
+      <div>
+        <input type="text" class="form-input" id="newItemUnit" placeholder="Unit (visit)" style="width:100px">
+      </div>
+    </div>
+    <button class="btn btn-primary" style="margin-top:10px" onclick="addSaleItem()">+ Add Item</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('saleItemModal')">Done</button>
+  </div>
+</div>
+
+<!-- VENDOR ADD/EDIT MODAL -->
+<div class="modal-overlay" id="vendorModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title" id="vendorModalTitle">Add Provider</div>
+
+    <div class="form-group">
+      <label class="form-label">Vendor Type</label>
+      <div class="vendor-tabs" style="margin-bottom:0">
+        <button class="vendor-tab active" id="vtype-seller" onclick="selectVendorType('seller')">🏥 Provider (doctor/hospital)</button>
+        <button class="vendor-tab" id="vtype-buyer" onclick="selectVendorType('buyer')">🏦 Insurance / Payer</button>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label class="form-label">Name *</label>
+      <input type="text" class="form-input" id="vendorName" placeholder="Doctor / Hospital / Insurance">
+    </div>
+    <div class="form-row">
+      <div class="form-group">
+        <label class="form-label">Phone</label>
+        <input type="tel" class="form-input" id="vendorPhone" placeholder="(555) 000-0000">
+      </div>
+      <div class="form-group">
+        <label class="form-label">Email</label>
+        <input type="email" class="form-input" id="vendorEmail" placeholder="email@example.com">
+      </div>
+    </div>
+    <div class="form-group">
+      <label class="form-label">Address</label>
+      <input type="text" class="form-input" id="vendorAddress" placeholder="Street address, city">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Website / Social</label>
+      <input type="text" class="form-input" id="vendorWebsite" placeholder="website.com or @handle">
+    </div>
+    <div class="form-group">
+      <label class="form-label">What they specialize in</label>
+      <input type="text" class="form-input" id="vendorProducts" placeholder="e.g. Cardiology, Pediatrics / Insurance plan">
+    </div>
+    <div class="form-group">
+      <label class="form-label">Notes</label>
+      <textarea class="form-textarea" id="vendorNotes" placeholder="Any notes about this vendor..." style="min-height:60px"></textarea>
+    </div>
+
+    <button class="btn btn-primary" onclick="saveVendor()">Save Vendor</button>
+    <button class="btn btn-danger btn-sm" style="margin-top:8px;width:100%" id="deleteVendorBtn" onclick="deleteCurrentVendor()" style="display:none">Delete Vendor</button>
+    <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('vendorModal')">Cancel</button>
+  </div>
+</div>
+
+<!-- VENDOR DETAIL MODAL -->
+<div class="modal-overlay" id="vendorDetailModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div id="vendorDetailContent"></div>
+    <button class="btn btn-secondary" style="margin-top:10px" onclick="closeModal('vendorDetailModal')">Close</button>
+  </div>
+</div>
+
+<!-- GOOGLE SHEETS SETUP MODAL -->
+<div class="modal-overlay" id="googleModal">
+  <div class="modal-sheet">
+    <div class="modal-handle"></div>
+    <div class="modal-title">Google Sheets Setup</div>
+
+    <div id="googleSetupContent">
+      <div class="status-bar" id="googleModalStatus">
+        <span>ℹ️</span>
+        <span>Paste your Apps Script Web App URL below — both devices will sync automatically</span>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:8px">How it works</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.8">
+          • Google Sheets is your <strong>live database</strong><br>
+          • Every device pulls the latest data on open<br>
+          • Every save pushes instantly to the cloud<br>
+          • Receipt photos saved to <strong>Google Drive</strong><br>
+          • No more conflicts between devices ✓
+        </div>
+      </div>
+
+      <div class="card" style="margin-bottom:14px">
+        <div class="card-title" style="margin-bottom:8px">Setup Steps (one time, on a computer)</div>
+        <div style="font-size:13px;color:var(--text-mid);line-height:1.8">
+          1. Go to <strong>sheets.google.com</strong> → New blank spreadsheet<br>
+          2. Name it: <strong>dentonmedical</strong><br>
+          3. Click <strong>Extensions → Apps Script</strong><br>
+          4. Delete all code, paste in <code>google-apps-script.js</code><br>
+          5. Click <strong>Deploy → New deployment → Web app</strong><br>
+          6. Execute as: <em>Me</em> · Access: <em>Anyone</em><br>
+          7. Click Deploy → Authorize → copy the URL<br>
+          8. Paste URL below → tap <strong>Save & Connect</strong><br>
+          9. Tap <strong>Sync</strong> — all your data will appear!
+        </div>
+      </div>
+
+      <div class="form-group">
+        <label class="form-label">Apps Script Web App URL</label>
+        <input type="text" class="form-input" id="scriptUrl" placeholder="https://script.google.com/macros/s/…/exec">
+        <div class="form-hint">From Deploy → Manage deployments → copy Web app URL</div>
+      </div>
+
+      <button class="btn btn-primary" onclick="saveGoogleSettings()">Save & Connect</button>
+      <button class="btn btn-secondary" style="margin-top:8px" onclick="closeModal('googleModal')">Cancel</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════
+//  DATA STORE
+// ══════════════════════════════════════════════
+const DB = {
+  expenses: [],
+  sales: [],
+  vendors: [],
+  expenseCategories: [
+    { id: 'lodging', name: 'Lodging', emoji: '🏨' },
+    { id: 'meals', name: 'Meals', emoji: '🍽️' },
+    { id: 'mileage', name: 'Mileage', emoji: '🚗' },
+    { id: 'deductible', name: 'Deductibles', emoji: '🧾' },
+    { id: 'copay', name: 'Co-Pay', emoji: '💳' },
+    { id: 'prescription', name: 'Prescriptions', emoji: '💊' },
+    { id: 'procedure', name: 'Procedures', emoji: '🏥' },
+    { id: 'lab', name: 'Lab/Tests', emoji: '🔬' },
+    { id: 'equipment', name: 'Medical Equipment', emoji: '🩺' },
+    { id: 'parking', name: 'Parking/Tolls', emoji: '🅿️' },
+    { id: 'insurance', name: 'Insurance Premium', emoji: '📋' },
+    { id: 'dental', name: 'Dental', emoji: '🦷' },
+    { id: 'vision', name: 'Vision', emoji: '👓' },
+    { id: 'therapy', name: 'Therapy', emoji: '🧘' },
+    { id: 'other', name: 'Other', emoji: '📦' },
+  ],
+  saleItems: [
+    { id: 'office_visit', name: 'Office Visit', unit: 'visit' },
+    { id: 'specialist', name: 'Specialist Visit', unit: 'visit' },
+    { id: 'er_visit', name: 'Emergency Room', unit: 'visit' },
+    { id: 'urgent_care', name: 'Urgent Care', unit: 'visit' },
+    { id: 'procedure', name: 'Procedure/Surgery', unit: 'each' },
+    { id: 'imaging', name: 'Imaging (X-ray, MRI, etc)', unit: 'test' },
+    { id: 'lab_work', name: 'Lab Work', unit: 'test' },
+    { id: 'physical_therapy', name: 'Physical Therapy', unit: 'session' },
+    { id: 'dental_cleaning', name: 'Dental Cleaning', unit: 'visit' },
+    { id: 'eye_exam', name: 'Eye Exam', unit: 'visit' },
+    { id: 'mental_health', name: 'Mental Health Session', unit: 'session' },
+  ],
+  settings: {
+    sheetsUrl: '',
+    scriptUrl: '',
+    googleConnected: false,
+    mileageRate: 0.21,  // IRS medical mileage rate
+  }
+};
+
+function saveDBLocal() {
+  try {
+    localStorage.setItem('dm_expenses', JSON.stringify(DB.expenses));
+    localStorage.setItem('dm_visits', JSON.stringify(DB.sales));
+    localStorage.setItem('dm_providers', JSON.stringify(DB.vendors));
+    localStorage.setItem('dm_categories', JSON.stringify(DB.expenseCategories));
+    localStorage.setItem('dm_visittypes', JSON.stringify(DB.saleItems));
+    localStorage.setItem('dm_settings', JSON.stringify(DB.settings));
+  } catch(e) {}
+}
+
+function loadDBLocal() {
+  try {
+    const e = localStorage.getItem('dm_expenses');
+    const s = localStorage.getItem('dm_visits');
+    const v = localStorage.getItem('dm_providers');
+    const c = localStorage.getItem('dm_categories');
+    const si = localStorage.getItem('dm_visittypes');
+    const st = localStorage.getItem('dm_settings');
+    if (e) DB.expenses = JSON.parse(e);
+    if (s) DB.sales = JSON.parse(s);
+    if (v) DB.vendors = JSON.parse(v);
+    if (c) DB.expenseCategories = JSON.parse(c);
+    if (si) DB.saleItems = JSON.parse(si);
+    if (st) DB.settings = Object.assign(DB.settings, JSON.parse(st));
+  } catch(e) {}
+}
+
+// ══════════════════════════════════════════════
+//  NAVIGATION
+// ══════════════════════════════════════════════
+let currentScreen = 'dashboard';
+
+function showScreen(name) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.querySelectorAll('.nav-item').forEach(n => n.classList.remove('active'));
+  document.getElementById('screen-' + name).classList.add('active');
+  document.getElementById('nav-' + name).classList.add('active');
+  currentScreen = name;
+  if (name === 'dashboard') refreshDashboard();
+  if (name === 'reports') refreshReports('month');
+  if (name === 'expense') refreshExpenseList();
+  if (name === 'sales') refreshSalesList();
+  if (name === 'vendors') refreshVendorList();
+}
+
+// ══════════════════════════════════════════════
+//  DASHBOARD
+// ══════════════════════════════════════════════
+function refreshDashboard() {
+  const now = new Date();
+  const month = now.getMonth();
+  const year = now.getFullYear();
+  document.getElementById('dashMonth').textContent = now.toLocaleDateString('en-US', { month: 'long', year: 'numeric' });
+  document.getElementById('topbarDate').textContent = now.toLocaleDateString('en-US', { weekday: 'short', month: 'short', day: 'numeric' });
+
+  const mExpenses = DB.expenses.filter(e => { const d = safeDate(e.date); return d.getMonth() === month && d.getFullYear() === year; });
+  const mSales = DB.sales.filter(s => { const d = safeDate(s.date); return d.getMonth() === month && d.getFullYear() === year; });
+
+  const totalInc = mSales.reduce((a, s) => a + s.total, 0);
+  const totalExp = mExpenses.reduce((a, e) => a + e.amount, 0);
+  const net = totalInc - totalExp;
+
+  document.getElementById('dashReimbursed').textContent = '$' + totalInc.toFixed(2);
+  document.getElementById('dashExpense').textContent = '$' + totalExp.toFixed(2);
+  const ni = document.getElementById('netIndicator');
+  ni.className = 'net-indicator ' + (net >= 0 ? 'pos' : 'neg');
+  document.getElementById('dashNet').innerHTML = ni.outerHTML + '$' + Math.abs(net).toFixed(2);
+
+  const recent = [];
+  DB.expenses.forEach(e => recent.push({ ...e, type: 'expense' }));
+  DB.sales.forEach(s => recent.push({ ...s, type: 'income' }));
+  recent.sort((a, b) => safeDate(b.date) - safeDate(a.date));
+  const top = recent.slice(0, 6);
+
+  const rl = document.getElementById('recentList');
+  if (top.length === 0) {
+    rl.innerHTML = '<div class="empty-state"><div class="empty-icon">📋</div><div class="empty-text">No activity yet. Add your first expense or sale!</div></div>';
+  } else {
+    rl.innerHTML = top.map(item => {
+      if (item.type === 'expense') {
+        const cat = DB.expenseCategories.find(c => c.id === item.category) || { emoji: '📦', name: 'Other' };
+        return `<div class="recent-item">
+          <div class="recent-icon expense">${cat.emoji}</div>
+          <div class="recent-info">
+            <div class="recent-name">${item.description || cat.name}</div>
+            <div class="recent-meta">${cat.name} · ${fmtDate(item.date)}</div>
+          </div>
+          <div class="recent-amount expense">-$${item.amount.toFixed(2)}</div>
+        </div>`;
+      } else {
+        return `<div class="recent-item">
+          <div class="recent-icon income">💰</div>
+          <div class="recent-info">
+            <div class="recent-name">${item.buyer || 'Sale'}</div>
+            <div class="recent-meta">${item.items ? item.items.map(i=>i.name).join(', ') : 'Sale'} · ${fmtDate(item.date)}</div>
+          </div>
+          <div class="recent-amount income">+$${item.total.toFixed(2)}</div>
+        </div>`;
+      }
+    }).join('');
+  }
+}
+
+// ══════════════════════════════════════════════
+//  EXPENSES
+// ══════════════════════════════════════════════
+let selectedExpCategory = 'other';
+
+function openManualExpense() {
+  selectedExpCategory = 'other';
+  document.getElementById('expDate').value = todayStr();
+  document.getElementById('expDesc').value = '';
+  document.getElementById('expAmount').value = '';
+  document.getElementById('expVendor').value = '';
+  document.getElementById('expMileage').value = '';
+  document.getElementById('expMileCalc').textContent = '$0.00';
+  const rate = getMileageRate();
+  document.getElementById('expMileHint').textContent = `Rate: $${rate.toFixed(3)}/mile (IRS) — update in Settings`;
+  buildCategoryGrid();
+  openModal('expenseModal');
+}
+
+function buildCategoryGrid() {
+  const grid = document.getElementById('expCategoryGrid');
+  grid.innerHTML = DB.expenseCategories.map(c =>
+    `<div class="category-pill ${c.id === selectedExpCategory ? 'selected' : ''}" onclick="selectExpCat('${c.id}')">${c.emoji} ${c.name}</div>`
+  ).join('');
+}
+
+function selectExpCat(id) {
+  selectedExpCategory = id;
+  buildCategoryGrid();
+  if (id === 'mileage') {
+    document.getElementById('expMileage').focus();
+  }
+}
+
+function saveManualExpense() {
+  const amount_raw = parseFloat(document.getElementById('expAmount').value) || 0;
+  const mileage = parseFloat(document.getElementById('expMileage').value) || 0;
+  const rate = DB.settings.mileageRate || 0.21;
+  let amount = amount_raw;
+  let desc = document.getElementById('expDesc').value.trim();
+
+  if (mileage > 0 && selectedExpCategory === 'mileage') {
+    amount = parseFloat((mileage * rate).toFixed(2));
+    if (!desc) desc = `${mileage} miles @ $${rate}/mi`;
+  }
+
+  if (amount <= 0 && mileage <= 0) { showToast('Enter an amount or mileage'); return; }
+  if (!desc && amount_raw > 0) { showToast('Add a description'); return; }
+
+  const exp = {
+    id: 'r' + Date.now(),
+    date: toDateStr(document.getElementById('expDate').value),
+    category: selectedExpCategory,
+    description: desc,
+    amount: amount,
+    vendor: document.getElementById('expVendor').value.trim(),
+    mileage: mileage || null,
+    mileageRate: mileage > 0 ? rate : null,
+    notes: document.getElementById('expNotes').value.trim(),
+    source: 'manual'
+  };
+  DB.expenses.unshift(exp);
+  saveDBLocal();
+  closeModal('expenseModal');
+  refreshExpenseList();
+  refreshDashboard();
+  showToast('Expense saved!');
+  autoSync(exp, 'expense');
+}
+
+function refreshExpenseList() {
+  const el = document.getElementById('expenseList');
+  if (DB.expenses.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">🧾</div><div class="empty-text">No expenses yet</div></div>';
+    return;
+  }
+  el.innerHTML = `<table class="data-table">
+    <thead><tr><th>Date</th><th>Category</th><th>Description</th><th style="text-align:right">Amount</th></tr></thead>
+    <tbody>` +
+    DB.expenses.map(e => {
+      const cat = DB.expenseCategories.find(c => c.id === e.category) || { emoji: '📦', name: 'Other' };
+      return `<tr onclick="deleteExpensePrompt(${e.id})">
+        <td style="white-space:nowrap">${fmtDate(e.date)}</td>
+        <td><span class="badge badge-green">${cat.emoji} ${cat.name}</span></td>
+        <td>${e.description || '—'}</td>
+        <td style="text-align:right;font-weight:600;color:var(--red)">$${e.amount.toFixed(2)}</td>
+      </tr>`;
+    }).join('') +
+    '</tbody></table>';
+}
+
+function deleteExpensePrompt(id) {
+  if (confirm('Delete this expense?')) {
+    DB.expenses = DB.expenses.filter(e => e.id !== id);
+    saveDBLocal();
+    refreshExpenseList();
+    refreshDashboard();
+    showToast('Deleted');
+    cloudDelete('expense', id);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  RECEIPT SCANNING (AI)
+// ══════════════════════════════════════════════
+let pendingLineItems = [];
+
+function openScanModal() {
+  document.getElementById('previewImg').style.display = 'none';
+  document.getElementById('scanPlaceholder').style.display = 'block';
+  document.getElementById('receiptResults').style.display = 'none';
+  document.getElementById('receiptDate').value = todayStr();
+  pendingLineItems = [];
+  openModal('scanModal');
+}
+
+async function handleImageUpload(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = async (e) => {
+    const base64 = e.target.result;
+    document.getElementById('previewImg').src = base64;
+    document.getElementById('previewImg').style.display = 'block';
+    document.getElementById('scanPlaceholder').style.display = 'none';
+    document.getElementById('processingOverlay').classList.add('show');
+    document.getElementById('receiptResults').style.display = 'none';
+
+    try {
+      const items = await analyzeReceiptWithAI(base64);
+      pendingLineItems = items;
+      renderLineItems(items);
+      document.getElementById('receiptResults').style.display = 'block';
+    } catch (err) {
+      showToast('Could not read receipt — enter manually');
+      document.getElementById('receiptResults').style.display = 'block';
+      pendingLineItems = [{ name: 'Receipt Item', category: 'other', amount: 0 }];
+      renderLineItems(pendingLineItems);
+    }
+    document.getElementById('processingOverlay').classList.remove('show');
+  };
+  reader.readAsDataURL(file);
+  event.target.value = '';
+}
+
+async function analyzeReceiptWithAI(base64Data) {
+  const imageData = base64Data.split(',')[1];
+  const mediaType = base64Data.split(';')[0].replace('data:', '');
+
+  const categories = DB.expenseCategories.map(c => c.id + ':' + c.name).join(', ');
+
+  const response = await fetch('https://api.anthropic.com/v1/messages', {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      model: 'claude-sonnet-4-20250514',
+      max_tokens: 1000,
+      messages: [{
+        role: 'user',
+        content: [
+          {
+            type: 'image',
+            source: { type: 'base64', media_type: mediaType, data: imageData }
+          },
+          {
+            type: 'text',
+            text: `You are reading a medical receipt or bill. Extract all line items (services, medications, fees). For each item, assign a category from: ${categories}. 
+            
+Return ONLY a JSON array, no other text, no markdown, like:
+[{"name":"Chicken Feed 50lb","amount":24.99,"category":"feed"},{"name":"Fencing Wire","amount":45.00,"category":"materials"}]
+
+If you cannot read the receipt clearly, return a best-guess array with at least one item. Always return valid JSON array.`
+          }
+        ]
+      }]
+    })
+  });
+
+  const data = await response.json();
+  const text = data.content.map(b => b.text || '').join('').trim();
+  const clean = text.replace(/```json|```/g, '').trim();
+  return JSON.parse(clean);
+}
+
+function renderLineItems(items) {
+  const list = document.getElementById('lineItemsList');
+  list.innerHTML = items.map((item, i) => {
+    const cat = DB.expenseCategories.find(c => c.id === item.category) || { emoji: '📦', name: 'Other' };
+    return `<div class="line-item" id="li-${i}">
+      <div>
+        <input class="form-input" value="${item.name}" oninput="pendingLineItems[${i}].name=this.value" style="padding:8px 10px;font-size:13px;margin-bottom:4px">
+        <div>
+          <select class="form-select" onchange="pendingLineItems[${i}].category=this.value" style="padding:6px 10px;font-size:12px">
+            ${DB.expenseCategories.map(c => `<option value="${c.id}" ${c.id===item.category?'selected':''}>${c.emoji} ${c.name}</option>`).join('')}
+          </select>
+        </div>
+      </div>
+      <input type="number" class="form-input" value="${item.amount}" oninput="pendingLineItems[${i}].amount=parseFloat(this.value)||0" style="padding:8px 10px;font-size:14px;width:80px;text-align:right">
+      <button class="remove-btn" onclick="removeLineItem(${i})">×</button>
+    </div>`;
+  }).join('') +
+  `<button class="btn btn-secondary btn-sm" style="margin-top:8px" onclick="addBlankLineItem()">+ Add Item</button>`;
+}
+
+function removeLineItem(i) {
+  pendingLineItems.splice(i, 1);
+  renderLineItems(pendingLineItems);
+}
+
+function addBlankLineItem() {
+  pendingLineItems.push({ name: '', category: 'other', amount: 0 });
+  renderLineItems(pendingLineItems);
+}
+
+async function saveReceiptExpenses() {
+  if (pendingLineItems.length === 0) { showToast('No items to save'); return; }
+  const date = toDateStr(document.getElementById('receiptDate').value);
+  const vendor = document.getElementById('receiptVendor').value.trim();
+  const notes = document.getElementById('receiptNotes').value.trim();
+
+  // Upload receipt photo to Google Drive first
+  const previewImg = document.getElementById('previewImg');
+  let receiptUrl = '';
+  if (previewImg.src && previewImg.src.startsWith('data:')) {
+    const firstId = Date.now();
+    showToast('Uploading receipt photo…');
+    receiptUrl = await uploadReceiptPhoto(previewImg.src, firstId) || '';
+  }
+
+  const saved = [];
+  pendingLineItems.forEach(item => {
+    if (!item.name && item.amount <= 0) return;
+    const exp = {
+      id: 'e' + Date.now() + Math.floor(Math.random()*1000),
+      date,
+      category: item.category || 'other',
+      description: item.name || 'Receipt item',
+      amount: parseFloat(item.amount) || 0,
+      vendor,
+      notes,
+      receiptUrl,
+      source: 'receipt'
+    };
+    DB.expenses.unshift(exp);
+    saved.push(exp);
+  });
+
+  saveDBLocal();
+  closeModal('scanModal');
+  refreshExpenseList();
+  refreshDashboard();
+  showToast(`Saved ${saved.length} expense${saved.length !== 1 ? 's' : ''}!`);
+
+  // Push each to cloud
+  for (const exp of saved) { await cloudSaveExpense(exp); }
+}
+
+// ══════════════════════════════════════════════
+//  SALES
+// ══════════════════════════════════════════════
+let saleItemRows = [];
+
+function openSaleEntry() {
+  saleItemRows = [{ itemId: DB.saleItems[0]?.id, qty: 1, price: '' }];
+  document.getElementById('saleDate').value = todayStr();
+  document.getElementById('saleBuyer').value = '';
+  document.getElementById('saleNotes').value = '';
+  document.getElementById('salePayment').value = 'Cash';
+  renderSaleItems();
+  openModal('saleModal');
+}
+
+function renderSaleItems() {
+  const container = document.getElementById('saleItemsContainer');
+  container.innerHTML = saleItemRows.map((row, i) => `
+    <div class="sale-item-row" id="sir-${i}">
+      <div class="form-select-wrap">
+        <select class="form-select" onchange="saleItemRows[${i}].itemId=this.value" style="padding:9px 28px 9px 10px;font-size:13px">
+          ${DB.saleItems.map(s => `<option value="${s.id}" ${s.id===row.itemId?'selected':''}>${s.name} (${s.unit})</option>`).join('')}
+          <option value="custom">Custom item...</option>
+        </select>
+      </div>
+      <input type="number" class="form-input" value="${row.qty}" min="1" step="0.5" placeholder="Qty" oninput="saleItemRows[${i}].qty=parseFloat(this.value)||0;calcSaleTotal()" style="padding:9px 10px;font-size:14px">
+      <input type="number" class="form-input" value="${row.price}" min="0" step="0.01" placeholder="$/unit" oninput="saleItemRows[${i}].price=parseFloat(this.value)||0;calcSaleTotal()" style="padding:9px 10px;font-size:14px">
+      <button class="remove-btn" onclick="removeSaleRow(${i})">×</button>
+    </div>
+  `).join('');
+  calcSaleTotal();
+}
+
+function addSaleItemRow() {
+  saleItemRows.push({ itemId: DB.saleItems[0]?.id, qty: 1, price: '' });
+  renderSaleItems();
+}
+
+function removeSaleRow(i) {
+  saleItemRows.splice(i, 1);
+  renderSaleItems();
+}
+
+function calcSaleTotal() {
+  const total = saleItemRows.reduce((a, r) => a + (parseFloat(r.qty) || 0) * (parseFloat(r.price) || 0), 0);
+  document.getElementById('saleTotalDisplay').textContent = '$' + total.toFixed(2);
+}
+
+function saveSale() {
+  const total = saleItemRows.reduce((a, r) => a + (parseFloat(r.qty) || 0) * (parseFloat(r.price) || 0), 0);
+  if (total <= 0) { showToast('Add items with prices'); return; }
+
+  const items = saleItemRows.filter(r => r.qty > 0 && r.price > 0).map(r => {
+    const sitem = DB.saleItems.find(s => s.id === r.itemId);
+    return {
+      itemId: r.itemId,
+      name: sitem ? sitem.name : 'Item',
+      unit: sitem ? sitem.unit : 'each',
+      qty: parseFloat(r.qty),
+      price: parseFloat(r.price),
+      subtotal: parseFloat(r.qty) * parseFloat(r.price)
+    };
+  });
+
+  const sale = {
+    id: 'r' + Date.now(),
+    date: toDateStr(document.getElementById('saleDate').value),
+    buyer: document.getElementById('saleBuyer').value.trim(),
+    items,
+    total,
+    payment: document.getElementById('salePayment').value,
+    notes: document.getElementById('saleNotes').value.trim()
+  };
+  DB.sales.unshift(sale);
+  saveDBLocal();
+  closeModal('saleModal');
+  refreshSalesList();
+  refreshDashboard();
+  showToast('Reimbursement recorded!');
+  autoSync(sale, 'sale');
+}
+
+function refreshSalesList() {
+  const el = document.getElementById('salesList');
+  if (DB.sales.length === 0) {
+    el.innerHTML = '<div class="empty-state"><div class="empty-icon">💰</div><div class="empty-text">No reimbursements recorded yet</div></div>';
+    return;
+  }
+  el.innerHTML = DB.sales.map(s => `
+    <div class="recent-item" onclick="deleteSalePrompt(${s.id})">
+      <div class="recent-icon income">💰</div>
+      <div class="recent-info">
+        <div class="recent-name">${s.buyer || 'Sale'}</div>
+        <div class="recent-meta">${s.items.map(i => `${i.qty} ${i.unit} ${i.name}`).join(', ')} · ${fmtDate(s.date)}</div>
+        <div style="margin-top:2px">${s.items.map(i => `<span class="badge badge-green">${i.name}</span>`).join(' ')}</div>
+      </div>
+      <div class="recent-amount income">+$${s.total.toFixed(2)}</div>
+    </div>
+  `).join('');
+}
+
+function deleteSalePrompt(id) {
+  if (confirm('Delete this sale record?')) {
+    DB.sales = DB.sales.filter(s => s.id !== id);
+    saveDBLocal();
+    refreshSalesList();
+    refreshDashboard();
+    showToast('Deleted');
+    cloudDelete('sale', id);
+  }
+}
+
+// ══════════════════════════════════════════════
+//  REPORTS
+// ══════════════════════════════════════════════
+let currentPeriod = 'month';
+
+function setReportPeriod(period, btn) {
+  currentPeriod = period;
+  document.querySelectorAll('.period-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  refreshReports(period);
+}
+
+function getDateRange(period) {
+  const now = new Date();
+  let start, end = new Date();
+  if (period === 'month') {
+    start = new Date(now.getFullYear(), now.getMonth(), 1);
+  } else if (period === 'last30') {
+    start = new Date(now - 30 * 86400000);
+  } else if (period === 'quarter') {
+    const q = Math.floor(now.getMonth() / 3);
+    start = new Date(now.getFullYear(), q * 3, 1);
+  } else {
+    start = new Date(now.getFullYear(), 0, 1);
+  }
+  return { start, end };
+}
+
+function refreshReports(period) {
+  const { start, end } = getDateRange(period);
+  const expenses = DB.expenses.filter(e => { const d = safeDate(e.date); return d >= start && d <= end; });
+  const sales = DB.sales.filter(s => { const d = safeDate(s.date); return d >= start && d <= end; });
+
+  const totalInc = sales.reduce((a, s) => a + s.total, 0);
+  const totalExp = expenses.reduce((a, e) => a + e.amount, 0);
+  const net = totalInc - totalExp;
+
+  document.getElementById('rptReimbursed').textContent = '$' + totalInc.toFixed(2);
+  document.getElementById('rptExpense').textContent = '$' + totalExp.toFixed(2);
+  const netEl = document.getElementById('rptNet');
+  netEl.textContent = '$' + net.toFixed(2);
+  netEl.style.color = net >= 0 ? 'var(--green-bright)' : 'var(--red)';
+
+  drawBarChart(period);
+  renderCatBreakdown(expenses, 'expenseCatBreakdown', false);
+  renderSalesBreakdown(sales, 'salesCatBreakdown');
+}
+
+function drawBarChart(period) {
+  const canvas = document.getElementById('reportCanvas');
+  const ctx = canvas.getContext('2d');
+  const W = canvas.width, H = canvas.height;
+  ctx.clearRect(0, 0, W, H);
+
+  const months = [];
+  const now = new Date();
+  const count = (period === 'year') ? 12 : 6;
+  for (let i = count - 1; i >= 0; i--) {
+    const d = new Date(now.getFullYear(), now.getMonth() - i, 1);
+    months.push({ month: d.getMonth(), year: d.getFullYear(), label: d.toLocaleDateString('en-US', { month: 'short' }) });
+  }
+
+  const data = months.map(m => {
+    const inc = DB.sales.filter(s => { const d = safeDate(s.date); return d.getMonth()===m.month && d.getFullYear()===m.year; }).reduce((a,s)=>a+s.total,0);
+    const exp = DB.expenses.filter(e => { const d = safeDate(e.date); return d.getMonth()===m.month && d.getFullYear()===m.year; }).reduce((a,e)=>a+e.amount,0);
+    return { ...m, inc, exp };
+  });
+
+  const maxVal = Math.max(...data.map(d => Math.max(d.inc, d.exp)), 1);
+  const bw = 14, gap = 4, groupW = bw * 2 + gap + 8;
+  const chartH = H - 30;
+  const startX = 10;
+
+  data.forEach((d, i) => {
+    const x = startX + i * groupW;
+    const incH = (d.inc / maxVal) * chartH;
+    const expH = (d.exp / maxVal) * chartH;
+
+    ctx.fillStyle = '#7db84a';
+    ctx.beginPath();
+    ctx.roundRect(x, chartH - incH, bw, incH, [3, 3, 0, 0]);
+    ctx.fill();
+
+    ctx.fillStyle = '#e8a87c';
+    ctx.beginPath();
+    ctx.roundRect(x + bw + gap, chartH - expH, bw, expH, [3, 3, 0, 0]);
+    ctx.fill();
+
+    ctx.fillStyle = '#7a7a60';
+    ctx.font = '9px Source Sans 3, sans-serif';
+    ctx.textAlign = 'center';
+    ctx.fillText(d.label, x + bw, H - 4);
+  });
+
+  ctx.fillStyle = '#7db84a'; ctx.fillRect(W - 100, 6, 10, 10);
+  ctx.fillStyle = '#7a7a60'; ctx.font = '10px sans-serif'; ctx.textAlign = 'left';
+  ctx.fillText('Reimbursed', W - 86, 15);
+  ctx.fillStyle = '#e8a87c'; ctx.fillRect(W - 100, 22, 10, 10);
+  ctx.fillText('Expense', W - 86, 31);
+}
+
+function renderCatBreakdown(expenses, containerId, isSales) {
+  const el = document.getElementById(containerId);
+  if (expenses.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-text">No data for this period</div></div>'; return; }
+  const totals = {};
+  expenses.forEach(e => { totals[e.category] = (totals[e.category] || 0) + e.amount; });
+  const total = Object.values(totals).reduce((a, b) => a + b, 0);
+  const colors = ['#4a7c20','#c8891a','#1a6b8a','#8a3a1a','#5a1a8a','#1a8a5a','#8a7a1a','#1a3a8a'];
+  el.innerHTML = Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([catId, amt], i) => {
+    const cat = DB.expenseCategories.find(c => c.id === catId) || { emoji: '📦', name: catId };
+    const pct = Math.round((amt / total) * 100);
+    return `<div class="cat-row">
+      <div class="cat-color" style="background:${colors[i % colors.length]}"></div>
+      <div class="cat-name">${cat.emoji} ${cat.name}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${pct}%;background:${colors[i % colors.length]}"></div></div>
+      <div class="cat-pct">${pct}%</div>
+      <div class="cat-amt">$${amt.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+
+function renderSalesBreakdown(sales, containerId) {
+  const el = document.getElementById(containerId);
+  if (sales.length === 0) { el.innerHTML = '<div class="empty-state"><div class="empty-text">No sales for this period</div></div>'; return; }
+  const totals = {};
+  sales.forEach(s => s.items.forEach(item => { totals[item.name] = (totals[item.name] || 0) + item.subtotal; }));
+  const total = Object.values(totals).reduce((a, b) => a + b, 0);
+  const colors = ['#4a7c20','#c8891a','#1a6b8a','#8a3a1a','#5a1a8a','#1a8a5a','#8a7a1a'];
+  el.innerHTML = Object.entries(totals).sort((a, b) => b[1] - a[1]).map(([name, amt], i) => {
+    const pct = Math.round((amt / total) * 100);
+    return `<div class="cat-row">
+      <div class="cat-color" style="background:${colors[i % colors.length]}"></div>
+      <div class="cat-name">${name}</div>
+      <div class="cat-bar-wrap"><div class="cat-bar-fill" style="width:${pct}%;background:${colors[i % colors.length]}"></div></div>
+      <div class="cat-pct">${pct}%</div>
+      <div class="cat-amt">$${amt.toFixed(2)}</div>
+    </div>`;
+  }).join('');
+}
+
+// ══════════════════════════════════════════════
+//  VENDORS
+// ══════════════════════════════════════════════
+let currentVendorTab = 'sellers';
+let editingVendorId = null;
+let newVendorType = 'seller';
+
+function switchVendorTab(tab) {
+  currentVendorTab = tab;
+  document.getElementById('vtab-sellers').classList.toggle('active', tab === 'sellers');
+  document.getElementById('vtab-buyers').classList.toggle('active', tab === 'buyers');
+  document.getElementById('addVendorBtn').textContent = tab === 'sellers' ? '+ Add Seller' : '+ Add Buyer';
+  refreshVendorList();
+}
+
+function refreshVendorList() {
+  const type = currentVendorTab === 'sellers' ? 'seller' : 'buyer';
+  const list = DB.vendors.filter(v => v.type === type);
+  const el = document.getElementById('vendorList');
+
+  if (list.length === 0) {
+    el.innerHTML = `<div class="empty-state">
+      <div class="empty-icon">${type === 'seller' ? '🛒' : '💰'}</div>
+      <div class="empty-text">${type === 'seller' ? 'No sellers saved yet.\nAdd doctors, hospitals, pharmacies' : 'No buyers saved yet.\nAdd insurance companies here.'}</div>
+    </div>`;
+    return;
+  }
+
+  el.innerHTML = list.map(v => {
+    const initials = v.name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+    const stats = getVendorStats(v);
+    return `<div class="vendor-card" onclick="openVendorDetail('${v.id}')">
+      <div class="vendor-avatar ${v.type}">${initials}</div>
+      <div class="vendor-info">
+        <div class="vendor-name">${v.name}</div>
+        <div class="vendor-detail">${[v.phone, v.products, v.address].filter(Boolean).join(' · ') || 'Tap to view details'}</div>
+      </div>
+      <div class="vendor-stats">
+        <div class="vendor-stat-amt ${v.type}">${v.type === 'seller' ? '-' : '+'}$${stats.total.toFixed(0)}</div>
+        <div class="vendor-stat-count">${stats.count} transaction${stats.count !== 1 ? 's' : ''}</div>
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function getVendorStats(vendor) {
+  let total = 0, count = 0;
+  if (vendor.type === 'seller') {
+    DB.expenses.filter(e => e.vendor && e.vendor.toLowerCase() === vendor.name.toLowerCase())
+      .forEach(e => { total += e.amount; count++; });
+  } else {
+    DB.sales.filter(s => s.buyer && s.buyer.toLowerCase() === vendor.name.toLowerCase())
+      .forEach(s => { total += s.total; count++; });
+  }
+  return { total, count };
+}
+
+function openAddVendor() {
+  editingVendorId = null;
+  newVendorType = currentVendorTab === 'sellers' ? 'seller' : 'buyer';
+  document.getElementById('vendorModalTitle').textContent = 'Add Vendor';
+  document.getElementById('vendorName').value = '';
+  document.getElementById('vendorPhone').value = '';
+  document.getElementById('vendorEmail').value = '';
+  document.getElementById('vendorAddress').value = '';
+  document.getElementById('vendorWebsite').value = '';
+  document.getElementById('vendorProducts').value = '';
+  document.getElementById('vendorNotes').value = '';
+  document.getElementById('deleteVendorBtn').style.display = 'none';
+  selectVendorType(newVendorType);
+  openModal('vendorModal');
+}
+
+function selectVendorType(type) {
+  newVendorType = type;
+  document.getElementById('vtype-seller').classList.toggle('active', type === 'seller');
+  document.getElementById('vtype-buyer').classList.toggle('active', type === 'buyer');
+}
+
+function saveVendor() {
+  const name = document.getElementById('vendorName').value.trim();
+  if (!name) { showToast('Enter a vendor name'); return; }
+
+  const vendor = {
+    id: editingVendorId || ('v' + Date.now()),
+    type: newVendorType,
+    name,
+    phone: document.getElementById('vendorPhone').value.trim(),
+    email: document.getElementById('vendorEmail').value.trim(),
+    address: document.getElementById('vendorAddress').value.trim(),
+    website: document.getElementById('vendorWebsite').value.trim(),
+    products: document.getElementById('vendorProducts').value.trim(),
+    notes: document.getElementById('vendorNotes').value.trim(),
+    createdAt: editingVendorId ? (DB.vendors.find(v=>v.id===editingVendorId)?.createdAt || new Date().toISOString()) : new Date().toISOString()
+  };
+
+  if (editingVendorId) {
+    const idx = DB.vendors.findIndex(v => v.id === editingVendorId);
+    if (idx >= 0) DB.vendors[idx] = vendor;
+  } else {
+    DB.vendors.push(vendor);
+  }
+  saveDBLocal();
+  cloudSaveVendor(vendor);
+  closeModal('vendorModal');
+  closeModal('vendorDetailModal');
+  currentVendorTab = vendor.type === 'seller' ? 'sellers' : 'buyers';
+  switchVendorTab(currentVendorTab);
+  showToast(editingVendorId ? 'Vendor updated!' : 'Vendor saved!');
+}
+
+function openVendorDetail(id) {
+  const v = DB.vendors.find(x => x.id === id);
+  if (!v) return;
+  const stats = getVendorStats(v);
+
+  const transactions = v.type === 'seller'
+    ? DB.expenses.filter(e => e.vendor && e.vendor.toLowerCase() === v.name.toLowerCase()).slice(0,5)
+    : DB.sales.filter(s => s.buyer && s.buyer.toLowerCase() === v.name.toLowerCase()).slice(0,5);
+
+  const txHtml = transactions.length > 0
+    ? transactions.map(t => {
+        if (v.type === 'seller') {
+          const cat = DB.expenseCategories.find(c => c.id === t.category) || { emoji: '📦', name: 'Other' };
+          return `<div class="recent-item">
+            <div class="recent-icon expense">${cat.emoji}</div>
+            <div class="recent-info"><div class="recent-name">${t.description || cat.name}</div><div class="recent-meta">${fmtDate(t.date)}</div></div>
+            <div class="recent-amount expense">-$${t.amount.toFixed(2)}</div>
+          </div>`;
+        } else {
+          return `<div class="recent-item">
+            <div class="recent-icon income">💰</div>
+            <div class="recent-info"><div class="recent-name">${t.items?.map(i=>i.name).join(', ') || 'Sale'}</div><div class="recent-meta">${fmtDate(t.date)}</div></div>
+            <div class="recent-amount income">+$${t.total.toFixed(2)}</div>
+          </div>`;
+        }
+      }).join('')
+    : '<div class="empty-state" style="padding:16px 0"><div class="empty-text">No transactions yet</div></div>';
+
+  const initials = v.name.split(' ').map(w => w[0]).slice(0,2).join('').toUpperCase();
+
+  document.getElementById('vendorDetailContent').innerHTML = `
+    <div style="display:flex;align-items:center;gap:14px;margin-bottom:16px">
+      <div class="vendor-avatar ${v.type}" style="width:54px;height:54px;font-size:20px">${initials}</div>
+      <div>
+        <div style="font-family:'Playfair Display',serif;font-size:20px;color:var(--green-dark)">${v.name}</div>
+        <span class="badge ${v.type === 'seller' ? 'badge-gold' : 'badge-green'}">${v.type === 'seller' ? '🛒 Seller' : '💰 Buyer'}</span>
+      </div>
+    </div>
+
+    ${v.products ? `<div style="background:var(--green-mist);border-radius:var(--radius-sm);padding:10px 14px;margin-bottom:12px;font-size:13px;color:var(--green-dark)">🏷 ${v.products}</div>` : ''}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+      <div style="background:var(--green-mist);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Total ${v.type === 'seller' ? 'Spent' : 'Earned'}</div>
+        <div style="font-size:18px;font-weight:600;color:${v.type === 'seller' ? 'var(--red)' : 'var(--green-bright)'}">$${stats.total.toFixed(2)}</div>
+      </div>
+      <div style="background:var(--green-mist);border-radius:10px;padding:10px;text-align:center">
+        <div style="font-size:11px;color:var(--text-muted);margin-bottom:2px">Transactions</div>
+        <div style="font-size:18px;font-weight:600;color:var(--text-dark)">${stats.count}</div>
+      </div>
+    </div>
+
+    ${v.phone || v.email || v.address || v.website ? `
+    <div class="card" style="margin-bottom:12px">
+      <div class="card-title" style="margin-bottom:8px">Contact</div>
+      ${v.phone ? `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text-muted);width:60px">Phone</span><a href="tel:${v.phone}" style="color:var(--green-bright);text-decoration:none">${v.phone}</a></div>` : ''}
+      ${v.email ? `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text-muted);width:60px">Email</span><a href="mailto:${v.email}" style="color:var(--green-bright);text-decoration:none">${v.email}</a></div>` : ''}
+      ${v.address ? `<div style="display:flex;gap:8px;padding:6px 0;border-bottom:1px solid var(--border);font-size:14px"><span style="color:var(--text-muted);width:60px">Address</span><span>${v.address}</span></div>` : ''}
+      ${v.website ? `<div style="display:flex;gap:8px;padding:6px 0;font-size:14px"><span style="color:var(--text-muted);width:60px">Web</span><span style="color:var(--green-bright)">${v.website}</span></div>` : ''}
+    </div>` : ''}
+
+    ${v.notes ? `<div style="font-size:13px;color:var(--text-muted);margin-bottom:12px;font-style:italic">"${v.notes}"</div>` : ''}
+
+    <div class="card-title" style="margin-bottom:6px">Recent Transactions</div>
+    ${txHtml}
+
+    <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:14px">
+      <button class="btn btn-secondary" onclick="editVendor('${v.id}')">✏️ Edit</button>
+      <button class="btn btn-danger" onclick="deleteVendorConfirm('${v.id}')">🗑 Delete</button>
+    </div>
+  `;
+  openModal('vendorDetailModal');
+}
+
+function editVendor(id) {
+  const v = DB.vendors.find(x => x.id === id);
+  if (!v) return;
+  editingVendorId = id;
+  newVendorType = v.type;
+  document.getElementById('vendorModalTitle').textContent = 'Edit Vendor';
+  document.getElementById('vendorName').value = v.name;
+  document.getElementById('vendorPhone').value = v.phone || '';
+  document.getElementById('vendorEmail').value = v.email || '';
+  document.getElementById('vendorAddress').value = v.address || '';
+  document.getElementById('vendorWebsite').value = v.website || '';
+  document.getElementById('vendorProducts').value = v.products || '';
+  document.getElementById('vendorNotes').value = v.notes || '';
+  document.getElementById('deleteVendorBtn').style.display = 'block';
+  selectVendorType(v.type);
+  closeModal('vendorDetailModal');
+  openModal('vendorModal');
+}
+
+function deleteVendorConfirm(id) {
+  if (confirm('Delete this vendor? Their transaction history will remain.')) {
+    DB.vendors = DB.vendors.filter(v => v.id !== id);
+    saveDBLocal();
+    cloudDelete('vendor', id);
+    closeModal('vendorDetailModal');
+    refreshVendorList();
+    showToast('Vendor deleted');
+  }
+}
+
+function deleteCurrentVendor() {
+  if (editingVendorId) deleteVendorConfirm(editingVendorId);
+}
+
+// ── AUTOCOMPLETE ──
+function vendorAutocomplete(input, preferredType, listId) {
+  const val = input.value.toLowerCase().trim();
+  const list = document.getElementById(listId);
+  if (!val || val.length < 1) { list.style.display = 'none'; return; }
+
+  // Search all vendors, prefer the preferredType
+  const matches = DB.vendors.filter(v => v.name.toLowerCase().includes(val))
+    .sort((a, b) => {
+      if (a.type === preferredType && b.type !== preferredType) return -1;
+      if (b.type === preferredType && a.type !== preferredType) return 1;
+      return a.name.localeCompare(b.name);
+    }).slice(0, 5);
+
+  if (matches.length === 0) { list.style.display = 'none'; return; }
+
+  list.innerHTML = matches.map(v =>
+    `<div class="autocomplete-item" onclick="selectVendorAutocomplete('${input.id}','${listId}','${v.name.replace(/'/g,"\\'")}')">
+      <span>${v.name}</span>
+      <span class="autocomplete-badge ${v.type === 'seller' ? 'badge-gold' : 'badge-green'}">${v.type === 'seller' ? '🛒 Seller' : '💰 Buyer'}</span>
+    </div>`
+  ).join('');
+  list.style.display = 'block';
+}
+
+function selectVendorAutocomplete(inputId, listId, name) {
+  document.getElementById(inputId).value = name;
+  document.getElementById(listId).style.display = 'none';
+}
+
+document.addEventListener('click', e => {
+  document.querySelectorAll('.autocomplete-list').forEach(l => {
+    if (!l.previousElementSibling?.contains(e.target)) l.style.display = 'none';
+  });
+});
+
+// ══════════════════════════════════════════════
+//  SETTINGS
+// ══════════════════════════════════════════════
+function refreshSettings() {
+  document.getElementById('catCountDesc').textContent = DB.expenseCategories.length + ' categories';
+  document.getElementById('itemCountDesc').textContent = DB.saleItems.length + ' items';
+  document.getElementById('vendorCountDesc').textContent = DB.vendors.length + ' vendors saved';
+
+  // Device name
+  const deviceName = DB.settings.deviceName || '';
+  document.getElementById('deviceNameInput').value = deviceName;
+  document.getElementById('deviceNameStatus').textContent = deviceName ? 'Current: ' + deviceName : 'Not set yet';
+
+  // Mileage rate field
+  const rate = DB.settings.mileageRate || 0.21;
+  document.getElementById('mileageRateInput').value = rate.toFixed(3);
+
+  // YTD mileage stats
+  const year = new Date().getFullYear();
+  const ytdMileExp = DB.expenses.filter(e => e.mileage && safeDate(e.date).getFullYear() === year);
+  const ytdMiles = ytdMileExp.reduce((a, e) => a + (e.mileage || 0), 0);
+  const ytdValue = ytdMileExp.reduce((a, e) => a + (e.mileage || 0) * (e.mileageRate || rate), 0);
+  document.getElementById('ytdMilesSetting').textContent = ytdMiles.toFixed(1) + ' miles';
+  document.getElementById('ytdMileValueSetting').textContent = '$' + ytdValue.toFixed(2);
+
+  const gs = document.getElementById('googleStatus');
+  if (DB.settings.googleConnected && DB.settings.scriptUrl) {
+    gs.innerHTML = '<div class="status-bar">✅ Live cloud sync active — both devices share the same data</div>';
+  } else {
+    gs.innerHTML = '<div class="status-bar error">⚠️ Not connected — tap Google Sheets Sync to enable two-device sync</div>';
+  }
+}
+
+function openCategoryManager() {
+  renderCategoryList();
+  openModal('categoryModal');
+}
+
+function renderCategoryList() {
+  document.getElementById('categoryList').innerHTML = DB.expenseCategories.map((c, i) =>
+    `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="font-size:18px">${c.emoji}</span>
+      <span style="flex:1;font-size:14px">${c.name}</span>
+      ${i >= 4 ? `<button class="remove-btn" onclick="deleteCategory('${c.id}')">×</button>` : '<span style="width:22px"></span>'}
+    </div>`
+  ).join('');
+}
+
+function addCategory() {
+  const name = document.getElementById('newCatName').value.trim();
+  const emoji = document.getElementById('newCatEmoji').value.trim() || '📦';
+  if (!name) { showToast('Enter a category name'); return; }
+  const id = name.toLowerCase().replace(/\s+/g, '_');
+  if (DB.expenseCategories.find(c => c.id === id)) { showToast('Category already exists'); return; }
+  DB.expenseCategories.push({ id, name, emoji });
+  saveDBLocal();
+  renderCategoryList();
+  document.getElementById('newCatName').value = '';
+  document.getElementById('newCatEmoji').value = '';
+  showToast('Category added!');
+}
+
+function deleteCategory(id) {
+  DB.expenseCategories = DB.expenseCategories.filter(c => c.id !== id);
+  saveDBLocal();
+  renderCategoryList();
+}
+
+function openSaleItemManager() {
+  renderSaleItemList();
+  openModal('saleItemModal');
+}
+
+function renderSaleItemList() {
+  document.getElementById('saleItemList').innerHTML = DB.saleItems.map((s, i) =>
+    `<div style="display:flex;align-items:center;gap:10px;padding:8px 0;border-bottom:1px solid var(--border)">
+      <span style="flex:1;font-size:14px">${s.name}</span>
+      <span class="badge badge-gold">${s.unit}</span>
+      ${i >= 5 ? `<button class="remove-btn" onclick="deleteSaleItem('${s.id}')">×</button>` : '<span style="width:22px"></span>'}
+    </div>`
+  ).join('');
+}
+
+function addSaleItem() {
+  const name = document.getElementById('newItemName').value.trim();
+  const unit = document.getElementById('newItemUnit').value.trim() || 'each';
+  if (!name) { showToast('Enter an item name'); return; }
+  const id = name.toLowerCase().replace(/\s+/g, '_');
+  DB.saleItems.push({ id, name, unit });
+  saveDBLocal();
+  renderSaleItemList();
+  document.getElementById('newItemName').value = '';
+  document.getElementById('newItemUnit').value = '';
+  showToast('Item added!');
+}
+
+function deleteSaleItem(id) {
+  DB.saleItems = DB.saleItems.filter(s => s.id !== id);
+  saveDBLocal();
+  renderSaleItemList();
+}
+
+// ══════════════════════════════════════════════
+//  SYNC ENGINE v5
+//  Rules:
+//  1. Every save immediately POSTs that one record to sheet
+//  2. Sync button GETs all records from sheet -> replaces local
+//  3. Vendors are LOCAL ONLY - never synced (add on each device)
+//  4. Device name is stamped on every record in the sheet
+// ══════════════════════════════════════════════
+
+function getCloudUrl() { return DB.settings.scriptUrl || ''; }
+function getDeviceName() { return DB.settings.deviceName || 'Unknown Device'; }
+
+// POST one expense to sheet immediately on save
+async function cloudSaveExpense(exp) {
+  const url = getCloudUrl();
+  if (!url) return;
+  const rec = Object.assign({}, exp, { deviceName: getDeviceName() });
+  try {
+    const res = await fetch(url, { method: 'POST',
+      body: JSON.stringify({ action: 'saveExpense', record: rec }) });
+    const data = await res.json();
+    if (data && !data.success) console.warn('saveExpense:', data.error);
+  } catch(e) { console.warn('cloudSaveExpense:', e.message); }
+}
+
+// POST one sale to sheet immediately on save
+async function cloudSaveSale(sale) {
+  const url = getCloudUrl();
+  if (!url) return;
+  const rec = Object.assign({}, sale, { deviceName: getDeviceName() });
+  try {
+    const res = await fetch(url, { method: 'POST',
+      body: JSON.stringify({ action: 'saveSale', record: rec }) });
+    const data = await res.json();
+    if (data && !data.success) console.warn('saveSale:', data.error);
+  } catch(e) { console.warn('cloudSaveSale:', e.message); }
+}
+
+// POST vendor to sheet (for reference only - not used for sync)
+async function cloudSaveVendor(vendor) {
+  const url = getCloudUrl();
+  if (!url) return;
+  try {
+    await fetch(url, { method: 'POST',
+      body: JSON.stringify({ action: 'saveVendor',
+        record: Object.assign({}, vendor, { deviceName: getDeviceName() }) }) });
+  } catch(e) { console.warn('cloudSaveVendor:', e.message); }
+}
+
+// POST a delete for one record
+async function cloudDelete(type, id) {
+  const url = getCloudUrl();
+  if (!url || !id) return;
+  const actions = { expense: 'deleteExpense', sale: 'deleteSale', vendor: 'deleteVendor' };
+  try {
+    await fetch(url, { method: 'POST',
+      body: JSON.stringify({ action: actions[type] || 'deleteExpense', id: id }) });
+  } catch(e) { console.warn('cloudDelete:', e.message); }
+}
+
+// Upload receipt photo to Drive
+async function uploadReceiptPhoto(base64Data, expenseId) {
+  const url = getCloudUrl();
+  if (!url || !base64Data) return null;
+  try {
+    const res = await fetch(url, { method: 'POST', body: JSON.stringify({
+      action: 'uploadReceipt', imageBase64: base64Data,
+      filename: 'receipt_' + expenseId + '_' + todayStr() + '.jpg',
+      expenseId: expenseId
+    })});
+    const data = await res.json();
+    if (data && data.success && data.url) {
+      showToast('Receipt saved to Drive');
+      return data.url;
+    }
+  } catch(e) { console.warn('uploadReceiptPhoto:', e.message); }
+  return null;
+}
+
+// SYNC: GET all records from sheet -> update local DB
+// Vendors are NEVER touched - they stay local only
+async function syncToGoogle() {
+  const url = getCloudUrl();
+  if (!url) { openModal('googleModal'); return; }
+  setSyncStatus('pulling');
+  try {
+    const res = await fetch(url + '?action=read');
+    if (!res.ok) throw new Error('HTTP ' + res.status);
+    const text = await res.text();
+    let data;
+    try { data = JSON.parse(text); } catch(e) { throw new Error('Bad response from script - check deployment'); }
+    if (!data.success) throw new Error(data.error || 'Script returned error');
+
+    const sheetExpenses = (data.expenses || []).filter(function(e){ return e && e.id; });
+    const sheetSales    = (data.sales    || []).filter(function(s){ return s && s.id; });
+
+    if (sheetExpenses.length > 0) {
+      // Sheet has data - use it as truth
+      DB.expenses = sheetExpenses;
+    } else if (DB.expenses.length > 0) {
+      // Sheet empty, we have local data - push local records up to sheet
+      showToast('Uploading local records...');
+      for (var i = 0; i < DB.expenses.length; i++) {
+        await cloudSaveExpense(DB.expenses[i]);
+      }
+    }
+    // else both empty - nothing to do
+
+    if (sheetSales.length > 0) {
+      DB.sales = sheetSales;
+    } else if (DB.sales.length > 0) {
+      for (var j = 0; j < DB.sales.length; j++) {
+        await cloudSaveSale(DB.sales[j]);
+      }
+    }
+
+    if (data.settings && data.settings.mileageRate) {
+      DB.settings.mileageRate = parseFloat(data.settings.mileageRate) || 0.21;
+    }
+
+    // DB.vendors is NEVER modified by sync
+    saveDBLocal();
+    refreshAllScreens();
+    setSyncStatus('synced');
+    showToast('Synced - ' + DB.expenses.length + ' expenses, ' + DB.sales.length + ' sales');
+  } catch(err) {
+    setSyncStatus('error');
+    showToast('Sync failed: ' + err.message);
+    console.error('syncToGoogle error:', err);
+  }
+}
+
+async function initCloudSync() {
+  if (!getCloudUrl()) return;
+  await syncToGoogle();
+}
+
+// Legacy shim
+function autoSync(record, type) {
+  if (!getCloudUrl()) return;
+  if (type === 'expense') cloudSaveExpense(record);
+  if (type === 'sale')    cloudSaveSale(record);
+}
+
+function setSyncStatus(state) {
+  const dot   = document.getElementById('syncDot');
+  const label = document.getElementById('syncLabel');
+  if (!dot || !label) return;
+  if (state === 'synced')  { dot.className = 'sync-dot synced'; label.textContent = 'Synced'; }
+  if (state === 'pulling') { dot.className = 'sync-dot';        label.textContent = 'Syncing...'; }
+  if (state === 'pushing') { dot.className = 'sync-dot';        label.textContent = 'Saving...'; }
+  if (state === 'error')   { dot.className = 'sync-dot';        label.textContent = 'Retry'; }
+  if (state === 'offline') { dot.className = 'sync-dot';        label.textContent = 'Offline'; }
+}
+
+function refreshAllScreens() {
+  refreshDashboard();
+  if (currentScreen === 'expense')  refreshExpenseList();
+  if (currentScreen === 'sales')    refreshSalesList();
+  if (currentScreen === 'vendors')  refreshVendorList();
+  if (currentScreen === 'reports')  refreshReports(currentPeriod || 'month');
+}
+
+// Device name setting
+function saveDeviceName() {
+  const name = document.getElementById('deviceNameInput').value.trim();
+  if (!name) { showToast('Enter a device name'); return; }
+  DB.settings.deviceName = name;
+  saveDBLocal();
+  document.getElementById('deviceNameStatus').textContent = 'Saved: ' + name;
+  showToast('Device name saved');
+}
+
+function catIdFromLabel(label) {
+  const map = {
+    'Lodging': 'lodging', 'Meals': 'meals', 'Mileage': 'mileage',
+    'Deductibles': 'deductible', 'Co-Pay': 'copay', 'Prescriptions': 'prescription',
+    'Procedures': 'procedure', 'Lab/Tests': 'lab', 'Medical Equipment': 'equipment',
+    'Parking/Tolls': 'parking', 'Insurance Premium': 'insurance', 'Dental': 'dental',
+    'Vision': 'vision', 'Therapy': 'therapy', 'Other': 'other'
+  };
+  return map[label] || (label || '').toLowerCase().replace(/\s+/g, '_') || 'other';
+}
+
+// Google settings
+function handleGoogleSignIn() { openModal('googleModal'); }
+function handleDriveSetup()   { openModal('googleModal'); }
+
+function saveGoogleSettings() {
+  const script = document.getElementById('scriptUrl').value.trim();
+  if (!script) { showToast('Paste your Apps Script Web App URL'); return; }
+  DB.settings.scriptUrl       = script;
+  DB.settings.googleConnected = true;
+  saveDBLocal();
+  closeModal('googleModal');
+  refreshSettings();
+  showToast('Connected! Syncing...');
+  syncToGoogle();
+}
+
+// ══════════════════════════════════════════════
+//  MILEAGE HELPERS
+// ══════════════════════════════════════════════
+function getMileageRate() {
+  return parseFloat(DB.settings.mileageRate) || 0.21;
+}
+
+function saveMileageRate(val) {
+  const r = parseFloat(val);
+  if (!r || r < 0.1 || r > 2) { showToast('Enter a valid rate (e.g. 0.67)'); return; }
+  DB.settings.mileageRate = parseFloat(r.toFixed(3));
+  saveDBLocal();
+  refreshSettings();
+  showToast('Mileage rate updated to $' + DB.settings.mileageRate + '/mile');
+}
+
+// Quick mileage card on expense screen
+function updateQuickMileCalc() {
+  const miles = parseFloat(document.getElementById('quickMiles').value) || 0;
+  const rate = getMileageRate();
+  document.getElementById('quickMileTotal').textContent = '$' + (miles * rate).toFixed(2);
+  document.getElementById('quickMileRateDisplay').textContent = '$' + rate.toFixed(3);
+}
+
+function saveQuickMileage() {
+  const miles = parseFloat(document.getElementById('quickMiles').value) || 0;
+  const desc = document.getElementById('quickMileDesc').value.trim();
+  const date = toDateStr(document.getElementById('quickMileDate').value);
+  if (miles <= 0) { showToast('Enter miles driven'); return; }
+  const rate = getMileageRate();
+  const amount = parseFloat((miles * rate).toFixed(2));
+  const exp = {
+    id: 'r' + Date.now(),
+    date,
+    category: 'mileage',
+    description: desc || `${miles} miles driven`,
+    amount,
+    vendor: '',
+    mileage: miles,
+    mileageRate: rate,
+    notes: '',
+    source: 'manual'
+  };
+  DB.expenses.unshift(exp);
+  saveDBLocal();
+  document.getElementById('quickMiles').value = '';
+  document.getElementById('quickMileDesc').value = '';
+  document.getElementById('quickMileTotal').textContent = '$0.00';
+  refreshExpenseList();
+  refreshDashboard();
+  showToast(`${miles} miles saved — $${amount.toFixed(2)}`);
+  autoSync(exp, 'expense');
+}
+
+// Live calc in manual expense modal
+function updateExpMileCalc() {
+  const miles = parseFloat(document.getElementById('expMileage').value) || 0;
+  const rate = getMileageRate();
+  document.getElementById('expMileCalc').textContent = '$' + (miles * rate).toFixed(2);
+  document.getElementById('expMileHint').textContent = `Rate: $${rate.toFixed(3)}/mile (IRS) — update in Settings`;
+}
+
+// ══════════════════════════════════════════════
+//  EXPORT CSV
+// ══════════════════════════════════════════════
+function exportToCSV() {
+  const rate = DB.settings.mileageRate || 0.21;
+
+  // ── EXPENSES SHEET ──
+  let csv = 'EXPENSES\n';
+  csv += 'Date,Category,Description,Vendor,Miles,Rate ($/mi),Mileage Amount,Other Amount,Total Amount,Notes\n';
+
+  let totalMiles = 0, totalMileAmt = 0, totalOtherAmt = 0, totalExpAmt = 0;
+
+  DB.expenses.forEach(e => {
+    const cat = DB.expenseCategories.find(c => c.id === e.category);
+    const miles = e.mileage || '';
+    const mRate = e.mileageRate || (e.mileage ? rate : '');
+    const mileAmt = e.mileage ? (e.mileage * (e.mileageRate || rate)).toFixed(2) : '';
+    const otherAmt = (!e.mileage || e.category !== 'mileage') ? e.amount.toFixed(2) : '';
+    if (e.mileage) { totalMiles += e.mileage; totalMileAmt += parseFloat(mileAmt); }
+    else { totalOtherAmt += e.amount; }
+    totalExpAmt += e.amount;
+    csv += `${e.date},"${cat?.name||'Other'}","${(e.description||'').replace(/"/g,'""')}","${(e.vendor||'').replace(/"/g,'""')}",${miles},${mRate},${mileAmt},${otherAmt},${e.amount.toFixed(2)},"${(e.notes||'').replace(/"/g,'""')}"\n`;
+  });
+
+  // Totals row for expenses
+  csv += `TOTALS,,,,"${totalMiles.toFixed(1)}",,"${totalMileAmt.toFixed(2)}","${totalOtherAmt.toFixed(2)}","${totalExpAmt.toFixed(2)}",\n`;
+
+  // ── MILEAGE SUMMARY ──
+  csv += '\nMILEAGE SUMMARY\n';
+  csv += 'Date,Description,Miles,Rate ($/mi),Amount,Notes\n';
+  const mileExpenses = DB.expenses.filter(e => e.mileage && e.mileage > 0);
+  let sumMiles = 0, sumMileAmt = 0;
+  mileExpenses.forEach(e => {
+    const r = e.mileageRate || rate;
+    const amt = (e.mileage * r).toFixed(2);
+    sumMiles += e.mileage;
+    sumMileAmt += parseFloat(amt);
+    csv += `${e.date},"${(e.description||'').replace(/"/g,'""')}",${e.mileage},${r},${amt},"${(e.notes||'').replace(/"/g,'""')}"\n`;
+  });
+  csv += `TOTAL,,${sumMiles.toFixed(1)},,$${sumMileAmt.toFixed(2)},\n`;
+  csv += `IRS Rate Used,,$${rate}/mile,,,\n`;
+
+  // ── SALES SHEET ──
+  csv += '\nSALES\n';
+  csv += 'Date,Buyer,Item,Unit,Qty,Price/Unit,Subtotal,Total,Payment Method,Notes\n';
+  let totalSalesAmt = 0;
+  DB.sales.forEach(s => {
+    s.items.forEach(item => {
+      csv += `${s.date},"${(s.buyer||'').replace(/"/g,'""')}","${item.name}","${item.unit}",${item.qty},${item.price.toFixed(2)},${item.subtotal.toFixed(2)},${s.total.toFixed(2)},"${s.payment||''}","${(s.notes||'').replace(/"/g,'""')}"\n`;
+    });
+    totalSalesAmt += s.total;
+  });
+  csv += `TOTALS,,,,,,"${totalSalesAmt.toFixed(2)}","${totalSalesAmt.toFixed(2)}",,\n`;
+
+  // ── P&L SUMMARY ──
+  csv += '\nP&L SUMMARY\n';
+  csv += `Exported,${new Date().toLocaleDateString()}\n`;
+  csv += `Total Reimbursed,$${totalSalesAmt.toFixed(2)}\n`;
+  csv += `Total Expenses,$${totalExpAmt.toFixed(2)}\n`;
+  csv += `Total Miles,${totalMiles.toFixed(1)}\n`;
+  csv += `Mileage Deduction,$${totalMileAmt.toFixed(2)}\n`;
+  csv += `Net Profit/Loss,$${(totalSalesAmt - totalExpAmt).toFixed(2)}\n`;
+
+  const blob = new Blob([csv], { type: 'text/csv' });
+  const url = URL.createObjectURL(blob);
+  const a = document.createElement('a');
+  a.href = url;
+  a.download = `DentonMedical_${todayStr()}.csv`;
+  a.click();
+  URL.revokeObjectURL(url);
+  showToast('CSV exported!');
+}
+
+// ══════════════════════════════════════════════
+//  CLEAR DATA
+// ══════════════════════════════════════════════
+async function clearAllData() {
+  if (confirm('Delete ALL data on this device? This cannot be undone.')) {
+    if (confirm('Are you sure? All local expenses, sales and vendors will be removed.')) {
+      // Wipe all localStorage keys for this app
+      const keys = Object.keys(localStorage).filter(k => k.startsWith('df_'));
+      keys.forEach(k => localStorage.removeItem(k));
+
+      // Reset in-memory DB (keep settings so URL/device name survive)
+      DB.expenses = [];
+      DB.sales    = [];
+      DB.vendors  = [];
+
+      // Save cleared state
+      saveDBLocal();
+
+      // Force page reload to clear any in-memory state completely
+      showToast('Data cleared — reloading...');
+      setTimeout(() => window.location.reload(true), 1200);
+    }
+  }
+}
+
+// ══════════════════════════════════════════════
+//  UTILITIES
+// ══════════════════════════════════════════════
+function openModal(id) { document.getElementById(id).classList.add('open'); }
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+
+document.querySelectorAll('.modal-overlay').forEach(m => {
+  m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+});
+
+function showToast(msg) {
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(() => t.classList.remove('show'), 2500);
+}
+
+// Safely parse any date value — always returns a valid Date object
+function safeDate(val) {
+  if (!val) return new Date(0);
+  if (val instanceof Date) return isNaN(val) ? new Date(0) : val;
+  if (typeof val === 'string' && val.match(/^\d{4}-\d{2}-\d{2}/)) {
+    const p = val.split('-');
+    return new Date(parseInt(p[0]), parseInt(p[1])-1, parseInt(p[2]));
+  }
+  const d = new Date(val);
+  return isNaN(d.getTime()) ? new Date(0) : d;
+}
+
+function todayStr() {
+  const d = new Date();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+function fmtDate(str) {
+  if (!str) return '';
+  let d;
+  // Handle ISO string like "2025-04-21"
+  if (typeof str === 'string' && str.match(/^\d{4}-\d{2}-\d{2}/)) {
+    const parts = str.split('-');
+    d = new Date(parseInt(parts[0]), parseInt(parts[1])-1, parseInt(parts[2]));
+  } else {
+    d = new Date(str);
+  }
+  if (isNaN(d.getTime())) return String(str).substring(0,10) || '';
+  return d.toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: '2-digit' });
+}
+
+// Ensure a date value is stored as clean YYYY-MM-DD string
+function toDateStr(val) {
+  if (!val) return todayStr();
+  if (typeof val === 'string' && val.match(/^\d{4}-\d{2}-\d{2}/)) return val.substring(0,10);
+  const d = new Date(val);
+  if (isNaN(d.getTime())) return todayStr();
+  return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0');
+}
+
+// ══════════════════════════════════════════════
+//  INIT
+// ══════════════════════════════════════════════
+loadDBLocal();
+
+// Initialize quick mileage card
+document.getElementById('quickMileDate').value = todayStr();
+document.getElementById('quickMileRateDisplay').textContent = ''$' + getMileageRate().toFixed(3);
+
+if (DB.settings.googleConnected && DB.settings.scriptUrl) {
+  // Show loading state, then pull from cloud — cloud data is the truth
+  setSyncStatus('pulling');
+  document.getElementById('recentList').innerHTML = '<div class="empty-state"><div class="empty-icon">☁️</div><div class="empty-text">Loading from cloud…</div></div>';
+  initCloudSync().then(() => {
+    refreshDashboard();
+  });
+} else {
+  setSyncStatus('offline');
+  refreshDashboard();
+}
+
+// Service Worker registration for PWA
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch(() => {});
+}
+</script>
+</body>
+</html>
