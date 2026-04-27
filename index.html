@@ -2757,7 +2757,7 @@ loadDBLocal();
 
 // Initialize quick mileage card
 document.getElementById('quickMileDate').value = todayStr();
-document.getElementById('quickMileRateDisplay').textContent = ''$' + getMileageRate().toFixed(3);
+document.getElementById('quickMileRateDisplay').textContent = '$' + getMileageRate().toFixed(3);
 
 if (DB.settings.googleConnected && DB.settings.scriptUrl) {
   // Show loading state, then pull from cloud — cloud data is the truth
